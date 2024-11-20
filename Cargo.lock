@@ -7297,11 +7297,11 @@ checksum = "f638d531eccd6e23b980caf34876660d38e265409d8e99b397ab71eb3612fad0"
 name = "sequencer-client"
 version = "0.5.0-rc.1"
 dependencies = [
+ "alloy-primitives 0.8.12",
  "anyhow",
  "citrea-primitives",
  "hex",
  "jsonrpsee",
- "reth-primitives",
  "serde",
  "serde_json",
  "sov-rollup-interface",

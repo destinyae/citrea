@@ -21,8 +21,8 @@ serde_json = { workspace = true }
 tokio = { workspace = true }
 tracing = { workspace = true }
 
-# Reth Deps
-reth-primitives = { workspace = true }
+# Alloy Deps
+alloy-primitives = { workspace = true }
 
 # Sovereign-SDK deps
 sov-rollup-interface = { path = "../sovereign-sdk/rollup-interface" }
