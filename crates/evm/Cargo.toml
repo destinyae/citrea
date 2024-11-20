@@ -39,7 +39,6 @@ reth-primitives = { workspace = true, default-features = false }
 reth-provider = { workspace = true, optional = true }
 reth-rpc-eth-types = { workspace = true, optional = true }
 reth-rpc-server-types = { workspace = true, optional = true }
-reth-rpc-types = { workspace = true, optional = true }
 reth-rpc-types-compat = { workspace = true, optional = true }
 revm = { workspace = true, features = ["secp256k1"] }
 revm-inspectors = { workspace = true, optional = true }
@@ -71,7 +70,6 @@ native = [
   "sov-state/native",
   "sov-modules-api/native",
 
-  "reth-rpc-types",
   "reth-rpc-eth-types",
   "reth-rpc-server-types",
   "reth-rpc-types-compat",
