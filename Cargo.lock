@@ -158,6 +158,24 @@ dependencies = [
 ]
 
 [[package]]
+name = "alloy-dyn-abi"
+version = "0.8.12"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ef2364c782a245cf8725ea6dbfca5f530162702b5d685992ea03ce64529136cc"
+dependencies = [
+ "alloy-json-abi",
+ "alloy-primitives 0.8.12",
+ "alloy-sol-type-parser",
+ "alloy-sol-types 0.8.12",
+ "const-hex",
+ "derive_more 1.0.0",
+ "itoa",
+ "serde",
+ "serde_json",
+ "winnow",
+]
+
+[[package]]
 name = "alloy-eip2930"
 version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -510,6 +528,19 @@ dependencies = [
  "alloy-sol-types 0.8.12",
  "derive_more 1.0.0",
  "itertools 0.13.0",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "alloy-rpc-types-mev"
+version = "0.4.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7cec23ce56c869eec5f6b6fd6a8a92b5aa0cfaf8d7be3a96502e537554dc7430"
+dependencies = [
+ "alloy-eips 0.4.2",
+ "alloy-primitives 0.8.12",
+ "alloy-serde 0.4.2",
  "serde",
  "serde_json",
 ]
@@ -1336,7 +1367,7 @@ dependencies = [
  "bitflags 2.6.0",
  "cexpr",
  "clang-sys",
- "itertools 0.13.0",
+ "itertools 0.12.1",
  "proc-macro2",
  "quote",
  "regex",
@@ -5241,7 +5272,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e9552f850d5f0964a4e4d0bf306459ac29323ddfbae05e35a7c0d35cb0803cc5"
 dependencies = [
  "anyhow",
- "itertools 0.13.0",
+ "itertools 0.12.1",
  "proc-macro2",
  "quote",
  "syn 2.0.87",
@@ -6112,6 +6143,47 @@ dependencies = [
 ]
 
 [[package]]
+name = "reth-rpc-eth-api"
+version = "1.1.0"
+source = "git+https://github.com/paradigmxyz/reth?rev=1ba631ba9581973e7c6cadeea92cfe1802aceb4a#1ba631ba9581973e7c6cadeea92cfe1802aceb4a"
+dependencies = [
+ "alloy-dyn-abi",
+ "alloy-eips 0.4.2",
+ "alloy-json-rpc",
+ "alloy-network",
+ "alloy-primitives 0.8.12",
+ "alloy-rpc-types 0.4.2",
+ "alloy-rpc-types-eth 0.4.2",
+ "alloy-rpc-types-mev",
+ "async-trait",
+ "auto_impl",
+ "dyn-clone",
+ "futures",
+ "jsonrpsee",
+ "jsonrpsee-types",
+ "parking_lot",
+ "reth-chainspec",
+ "reth-errors",
+ "reth-evm",
+ "reth-execution-types",
+ "reth-network-api",
+ "reth-primitives",
+ "reth-provider",
+ "reth-revm",
+ "reth-rpc-eth-types",
+ "reth-rpc-server-types",
+ "reth-rpc-types-compat",
+ "reth-tasks",
+ "reth-transaction-pool",
+ "reth-trie",
+ "revm 14.0.3",
+ "revm-inspectors 0.8.1",
+ "revm-primitives 10.0.0",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
 name = "reth-rpc-eth-types"
 version = "1.1.0"
 source = "git+https://github.com/paradigmxyz/reth?rev=1ba631ba9581973e7c6cadeea92cfe1802aceb4a#1ba631ba9581973e7c6cadeea92cfe1802aceb4a"
@@ -6251,6 +6323,8 @@ dependencies = [
  "dyn-clone",
  "futures-util",
  "metrics",
+ "pin-project",
+ "rayon",
  "reth-metrics",
  "thiserror",
  "tokio",
@@ -7297,11 +7371,13 @@ checksum = "f638d531eccd6e23b980caf34876660d38e265409d8e99b397ab71eb3612fad0"
 name = "sequencer-client"
 version = "0.5.0-rc.1"
 dependencies = [
+ "alloy-network",
  "alloy-primitives 0.8.12",
  "anyhow",
  "citrea-primitives",
  "hex",
  "jsonrpsee",
+ "reth-rpc-eth-api",
  "serde",
  "serde_json",
  "sov-rollup-interface",
