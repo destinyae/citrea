@@ -139,13 +139,13 @@ reth-stages = { git = "https://github.com/paradigmxyz/reth", rev = "1ba631ba9581
 revm = { version = "12.1", features = ["serde"], default-features = false }
 # forcing cargo for this version or else chooses 3.1.1 and there is some dependency conflicts
 revm-primitives = { version = "8", default-features = false }
-alloy-trie = { version = "0.3.8", default-features = false }
+alloy-trie = { version = "0.6", default-features = false }
 alloy-rlp = { version = "0.3.8", default-features = false }
-alloy-primitives = { version = "0.7.7", default-features = false }
-alloy-sol-types = { version = "0.7.7", default-features = false, features = ["json"] }
-alloy = { version = "0.2.1", default-features = false }
-alloy-eips = { version = "0.2.1", default-features = false }
-alloy-consensus = { version = "0.2.1", default-features = false }
+alloy-primitives = { version = "0.8.7", default-features = false }
+alloy-sol-types = { version = "0.8.0", default-features = false, features = ["json"] }
+alloy = { version = "0.4.2", default-features = false }
+alloy-eips = { version = "0.4.2", default-features = false }
+alloy-consensus = { version = "0.4.2", default-features = false }
 
 ed25519-dalek = { version = "2", default-features = false, features = ["serde", "fast"] }
 secp256k1 = { version = "0.29.0", default-features = false, features = ["global-context", "recovery"] }
