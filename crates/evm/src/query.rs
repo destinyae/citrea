@@ -1826,8 +1826,8 @@ fn get_pending_block_env<C: sov_modules_api::Context>(
     let mut block_env = sealed_block_to_block_env(&latest_block.header);
     block_env.number += U256::from(1);
     block_env.basefee = U256::from(calculate_next_block_base_fee(
-        latest_block.header.gas_used as u128,
-        latest_block.header.gas_limit as u128,
+        latest_block.header.gas_used,
+        latest_block.header.gas_limit,
         latest_block.header.base_fee_per_gas.unwrap_or_default(),
         cfg.base_fee_params,
     ));

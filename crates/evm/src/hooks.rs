@@ -87,8 +87,8 @@ where
             .get(working_set)
             .expect("EVM chain config should be set");
         let basefee = calculate_next_block_base_fee(
-            parent_block.header.gas_used as u128,
-            parent_block.header.gas_limit as u128,
+            parent_block.header.gas_used,
+            parent_block.header.gas_limit,
             parent_block.header.base_fee_per_gas.unwrap_or_default(),
             cfg.base_fee_params,
         );
