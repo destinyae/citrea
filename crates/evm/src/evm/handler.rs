@@ -620,7 +620,7 @@ fn change_balance<EXT, DB: Database>(
         ..
     } = &mut context.evm.inner;
 
-    let account = journaled_state.load_account(address, db)?;
+    let mut account = journaled_state.load_account(address, db)?;
     account.mark_touch();
 
     let balance = &mut account.info.balance;
