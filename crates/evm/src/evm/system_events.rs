@@ -1,18 +1,11 @@
 use alloy_consensus::TxEip1559;
-use alloy_primitives::{address, Address, TxKind, U256};
+use alloy_primitives::{address, Address, TxKind, B256, U256};
 use reth_primitives::{
     Signature, Transaction, TransactionSigned, TransactionSignedEcRecovered,
     TransactionSignedNoHash,
 };
 
 use super::system_contracts::{BitcoinLightClient, BridgeWrapper};
-
-/// This is a special signature to force tx.signer to be set to SYSTEM_SIGNER
-pub const SYSTEM_SIGNATURE: Signature = Signature {
-    r: U256::ZERO,
-    s: U256::ZERO,
-    odd_y_parity: false,
-};
 
 /// This is a special system address to indicate a tx is called by system not by a user/contract.
 pub const SYSTEM_SIGNER: Address = address!("deaddeaddeaddeaddeaddeaddeaddeaddeaddead");
@@ -80,7 +73,12 @@ fn signed_system_transaction(
 ) -> TransactionSignedEcRecovered {
     let transaction = system_event_to_transaction(event, nonce, chain_id);
     let signed_no_hash = TransactionSignedNoHash {
-        signature: SYSTEM_SIGNATURE,
+        // This is a special signature to force tx.signer to be set to SYSTEM_SIGNER
+        signature: Signature::new(
+            U256::ZERO,
+            U256::ZERO,
+            alloy_primitives::Parity::Parity(false),
+        ),
         transaction,
     };
     let signed: TransactionSigned = signed_no_hash.into();
