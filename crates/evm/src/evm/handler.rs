@@ -347,7 +347,7 @@ impl<SPEC: Spec, EXT: CitreaExternalExt, DB: Database> CitreaHandler<SPEC, EXT, 
             if context.evm.env.tx.transact_to.is_call() {
                 // Nonce is already checked
                 let tx_caller = context.evm.env.tx.caller;
-                let caller_account = context
+                let mut caller_account = context
                     .evm
                     .inner
                     .journaled_state

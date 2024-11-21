@@ -1880,6 +1880,7 @@ dependencies = [
  "reth-rpc-eth-types",
  "reth-rpc-server-types",
  "reth-rpc-types-compat",
+ "reth-transaction-pool",
  "revm",
  "revm-inspectors",
  "schemars",

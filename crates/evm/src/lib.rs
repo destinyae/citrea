@@ -15,8 +15,6 @@ pub use system_events::SYSTEM_SIGNER;
 #[cfg(feature = "native")]
 mod rpc_helpers;
 #[cfg(feature = "native")]
-pub use error::rpc::*;
-#[cfg(feature = "native")]
 pub use rpc_helpers::*;
 #[cfg(feature = "native")]
 mod query;

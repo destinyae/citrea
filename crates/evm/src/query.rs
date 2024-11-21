@@ -20,7 +20,9 @@ use reth_primitives::{
     Block, BlockId, BlockNumberOrTag, SealedHeader, TransactionSignedEcRecovered,
 };
 use reth_provider::ProviderError;
-use reth_rpc_eth_types::error::{EthApiError, EthResult, RevertError, RpcInvalidTransactionError};
+use reth_rpc_eth_types::error::{
+    ensure_success, EthApiError, EthResult, RevertError, RpcInvalidTransactionError,
+};
 use reth_rpc_types_compat::block::from_primitive_with_hash;
 use revm::primitives::{
     BlobExcessGasAndPrice, BlockEnv, CfgEnvWithHandlerCfg, EVMError, ExecutionResult, HaltReason,
@@ -37,7 +39,6 @@ use sov_modules_api::WorkingSet;
 
 use crate::call::get_cfg_env;
 use crate::conversions::{create_tx_env, sealed_block_to_block_env};
-use crate::error::rpc::ensure_success;
 use crate::evm::call::{create_txn_env, prepare_call_env};
 use crate::evm::db::EvmDb;
 use crate::evm::primitive_types::{Receipt, SealedBlock, TransactionSignedAndRecovered};

@@ -4,12 +4,12 @@ use reth_primitives::{
     Address, Bytes as RethBytes, Transaction as RethTransaction, TxEip1559 as RethTxEip1559,
     TxEip4844 as RethTxEip4844, TxKind, B256, U256,
 };
+use reth_rpc_eth_types::SignError;
 use secp256k1::{PublicKey, SecretKey};
 
 use crate::evm::RlpEvmTransaction;
 use crate::signer::DevSigner;
 use crate::tests::DEFAULT_CHAIN_ID;
-use crate::SignError;
 
 /// ETH transactions signer used in tests.
 pub(crate) struct TestSigner {

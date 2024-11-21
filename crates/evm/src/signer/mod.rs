@@ -4,7 +4,7 @@ use alloy_primitives::{Address, B256};
 use reth_primitives::{sign_message, Transaction, TransactionSigned};
 use secp256k1::{PublicKey, SecretKey};
 
-use crate::error::rpc::SignError;
+use reth_rpc_eth_types::SignError;
 
 /// Ethereum transaction signer.
 #[derive(Clone)]
