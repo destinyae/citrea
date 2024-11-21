@@ -1,3 +1,4 @@
+use alloy_primitives::Sealable;
 use lazy_static::lazy_static;
 use rand::Rng;
 use reth_primitives::hex_literal::hex;
@@ -339,10 +340,12 @@ fn finalize_hook_creates_final_block() {
         parent_beacon_block_root: None,
         requests_root: None,
     };
+    let sealed = self.header.seal_slow();
+    let (header, seal) = sealed.into_parts();
     assert_eq!(
         block,
         SealedBlock {
-            header: header.seal_slow(),
+            header: SealedHeader::new(header, seal),
             l1_fee_rate: 0,
             l1_hash: B256::from(DA_ROOT_HASH.0),
             transactions: 3..6
