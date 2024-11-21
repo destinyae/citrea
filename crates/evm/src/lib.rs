@@ -32,8 +32,8 @@ pub mod smart_contracts;
 #[cfg(all(test, feature = "native"))]
 mod tests;
 
+use alloy_primitives::{Address, TxHash, B256};
 use evm::db::EvmDb;
-use reth_primitives::{Address, TxHash, B256};
 pub use revm::primitives::SpecId as EvmSpecId;
 use revm::primitives::{BlockEnv, U256};
 #[cfg(feature = "native")]

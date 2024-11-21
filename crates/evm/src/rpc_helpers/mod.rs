@@ -1,9 +1,9 @@
 use std::collections::HashMap;
 
+use alloy_primitives::{keccak256, Address};
 pub use filter::*;
 pub use log_utils::*;
 pub use responses::*;
-use reth_primitives::{keccak256, Address};
 use reth_rpc_eth_types::{EthApiError, EthResult};
 use reth_rpc_types::state::AccountOverride;
 use reth_rpc_types::BlockOverrides;
@@ -82,7 +82,7 @@ pub(crate) fn apply_block_overrides<C: sov_modules_api::Context>(
     block_overrides: &mut BlockOverrides,
     db: &mut EvmDb<C>,
 ) {
-    use reth_primitives::U256;
+    use alloy_primitives::U256;
 
     if let Some(block_hashes) = block_overrides.block_hash.take() {
         // override block hashes

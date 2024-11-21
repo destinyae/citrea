@@ -1,6 +1,8 @@
+use alloy_consensus::TxEip1559;
+use alloy_primitives::{address, Address, TxKind, U256};
 use reth_primitives::{
-    address, Address, Signature, Transaction, TransactionSigned, TransactionSignedEcRecovered,
-    TransactionSignedNoHash, TxEip1559, TxKind, U256,
+    Signature, Transaction, TransactionSigned, TransactionSignedEcRecovered,
+    TransactionSignedNoHash,
 };
 
 use super::system_contracts::{BitcoinLightClient, BridgeWrapper};

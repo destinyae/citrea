@@ -1,6 +1,6 @@
 use alloy_primitives::B256;
+use alloy_primitives::{Bloom, Bytes, U256};
 use citrea_primitives::basefee::calculate_next_block_base_fee;
-use reth_primitives::{Bloom, Bytes, U256};
 use revm::primitives::{BlobExcessGasAndPrice, BlockEnv, SpecId};
 use sov_modules_api::hooks::HookSoftConfirmationInfo;
 use sov_modules_api::prelude::*;

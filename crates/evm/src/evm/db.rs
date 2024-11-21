@@ -1,7 +1,7 @@
 #[cfg(feature = "native")]
 use std::collections::HashMap;
 
-use reth_primitives::{keccak256, Address, B256};
+use alloy_primitives::{keccak256, Address, B256};
 use revm::primitives::{AccountInfo as ReVmAccountInfo, Bytecode, SpecId, U256};
 use revm::Database;
 use sov_modules_api::{StateMapAccessor, WorkingSet};

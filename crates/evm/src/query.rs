@@ -3,14 +3,14 @@ use std::ops::{Range, RangeInclusive};
 
 use alloy_consensus::Eip658Value;
 use alloy_eips::eip2930::AccessListWithGasUsed;
-use alloy_primitives::Uint;
+use alloy_primitives::TxKind::{Call, Create};
+use alloy_primitives::{Uint, U256, U64};
 use alloy_rlp::Encodable;
 use citrea_primitives::basefee::calculate_next_block_base_fee;
 use citrea_primitives::forks::FORKS;
 use jsonrpsee::core::RpcResult;
-use reth_primitives::TxKind::{Call, Create};
 use reth_primitives::{
-    Block, BlockId, BlockNumberOrTag, SealedHeader, TransactionSignedEcRecovered, U256, U64,
+    Block, BlockId, BlockNumberOrTag, SealedHeader, TransactionSignedEcRecovered,
 };
 use reth_provider::ProviderError;
 use reth_rpc_eth_types::error::{EthApiError, EthResult, RevertError, RpcInvalidTransactionError};

@@ -1,9 +1,10 @@
 use std::collections::HashMap;
 
 use alloy_eips::eip1559::BaseFeeParams;
+use alloy_primitives::{keccak256, Address, Bloom, Bytes, B256, U256};
 use anyhow::Result;
 use reth_primitives::constants::{EMPTY_OMMER_ROOT_HASH, EMPTY_RECEIPTS, EMPTY_TRANSACTIONS};
-use reth_primitives::{keccak256, Address, Bloom, Bytes, B256, KECCAK_EMPTY, U256};
+use reth_primitives::KECCAK_EMPTY;
 use revm::primitives::{Bytecode, SpecId};
 use serde::{Deserialize, Deserializer};
 use sov_modules_api::prelude::*;

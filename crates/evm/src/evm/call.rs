@@ -2,7 +2,7 @@
 
 use std::cmp::min;
 
-use reth_primitives::{B256, U256};
+use alloy_primitives::{B256, U256};
 use reth_rpc_eth_types::error::{EthApiError, EthResult, RpcInvalidTransactionError};
 use reth_rpc_types::TransactionRequest;
 use revm::primitives::{BlockEnv, CfgEnvWithHandlerCfg, TxEnv};

@@ -1,6 +1,7 @@
 //! Transaction pool errors
 
-use reth_primitives::{Address, BlobTransactionValidationError, InvalidTransactionError, TxHash};
+use alloy_primitives::{Address, TxHash};
+use reth_primitives::{BlobTransactionValidationError, InvalidTransactionError};
 
 /// A trait for additional errors that can be thrown by the transaction pool.
 ///

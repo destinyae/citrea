@@ -1,6 +1,7 @@
 use std::ops::Range;
 
-use reth_primitives::{Address, Header, SealedHeader, TransactionSigned, B256};
+use alloy_primitives::{Address, B256};
+use reth_primitives::{Header, SealedHeader, TransactionSigned};
 
 /// Rlp encoded evm transaction.
 #[derive(

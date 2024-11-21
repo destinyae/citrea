@@ -1,7 +1,7 @@
 //! Implementation specific Errors for the `eth_` namespace.
 
+use alloy_primitives::Bytes;
 use jsonrpsee::types::ErrorObject;
-use reth_primitives::Bytes;
 use reth_rpc_eth_types::error::{EthResult, RevertError, RpcInvalidTransactionError};
 use revm::primitives::{ExecutionResult, HaltReason, OutOfGasError};
 

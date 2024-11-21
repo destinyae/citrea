@@ -1,6 +1,6 @@
+use alloy_primitives::Bytes as RethBytes;
 use reth_primitives::{
-    Bytes as RethBytes, TransactionSigned, TransactionSignedEcRecovered, TransactionSignedNoHash,
-    KECCAK_EMPTY,
+    TransactionSigned, TransactionSignedEcRecovered, TransactionSignedNoHash, KECCAK_EMPTY,
 };
 use revm::primitives::{AccountInfo as ReVmAccountInfo, SpecId, TransactTo, TxEnv, U256};
 
