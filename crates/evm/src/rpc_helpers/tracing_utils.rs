@@ -1,6 +1,6 @@
 use alloy_primitives::{TxHash, U256};
 use reth_primitives::revm_primitives::TxEnv;
-use reth_primitives::{TransactionSigned, TransactionSignedEcRecovere};
+use reth_primitives::{TransactionSigned, TransactionSignedEcRecovered};
 use reth_rpc_eth_types::error::{EthApiError, EthResult, RpcInvalidTransactionError};
 use reth_rpc_types::trace::geth::{
     FourByteFrame, GethDebugBuiltInTracerType, GethDebugTracerType, GethDebugTracingOptions,
