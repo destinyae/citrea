@@ -224,7 +224,7 @@ impl<C: sov_modules_api::Context> Evm<C> {
             gas_used: 0,
             timestamp: config.timestamp,
             mix_hash: B256::default(),
-            nonce: config.nonce,
+            nonce: config.nonce.into(),
             base_fee_per_gas: Some(config.starting_base_fee),
             extra_data: config.extra_data.clone(),
             // EIP-4844 related fields

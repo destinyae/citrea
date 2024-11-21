@@ -1,5 +1,5 @@
-use alloy_primitives::B256;
 use alloy_primitives::{Bloom, Bytes, U256};
+use alloy_primitives::{B256, B64};
 use citrea_primitives::basefee::calculate_next_block_base_fee;
 use revm::primitives::{BlobExcessGasAndPrice, BlockEnv, SpecId};
 use sov_modules_api::hooks::HookSoftConfirmationInfo;
@@ -211,7 +211,7 @@ where
             gas_limit: self.block_env.gas_limit.saturating_to(),
             gas_used,
             mix_hash: self.block_env.prevrandao.unwrap_or_default(),
-            nonce: 0,
+            nonce: B64::ZERO,
             base_fee_per_gas: Some(self.block_env.basefee.saturating_to()),
             extra_data: Bytes::default(),
             // EIP-4844 related fields

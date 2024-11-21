@@ -239,7 +239,10 @@ pub(crate) fn caller_gas_allowance(balance: U256, value: U256, gas_price: U256) 
         // Subtract transferred value from the caller balance.
         .checked_sub(value)
         // Return error if the caller has insufficient funds.
-        .ok_or_else(|| RpcInvalidTransactionError::InsufficientFunds)?
+        .ok_or_else(|| RpcInvalidTransactionError::InsufficientFunds {
+            cost: value,
+            balance,
+        })?
         // Calculate the amount of gas the caller can afford with the specified gas price.
         .checked_div(gas_price)
         // This will be 0 if gas price is 0. It is fine, because we check it before.
