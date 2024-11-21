@@ -1,11 +1,11 @@
 use alloy_primitives::{TxHash, U256};
-use reth_primitives::revm_primitives::TxEnv;
-use reth_primitives::{TransactionSigned, TransactionSignedEcRecovered};
-use reth_rpc_eth_types::error::{EthApiError, EthResult, RpcInvalidTransactionError};
-use reth_rpc_types::trace::geth::{
+use alloy_rpc_types_trace::geth::{
     FourByteFrame, GethDebugBuiltInTracerType, GethDebugTracerType, GethDebugTracingOptions,
     GethTrace, NoopFrame,
 };
+use reth_primitives::revm_primitives::TxEnv;
+use reth_primitives::{TransactionSigned, TransactionSignedEcRecovered};
+use reth_rpc_eth_types::error::{EthApiError, EthResult, RpcInvalidTransactionError};
 use revm::precompile::{PrecompileSpecId, Precompiles};
 use revm::primitives::db::Database;
 use revm::primitives::{Address, BlockEnv, CfgEnvWithHandlerCfg, EVMError, ResultAndState, SpecId};

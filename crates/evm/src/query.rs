@@ -4,8 +4,15 @@ use std::ops::{Range, RangeInclusive};
 use alloy_consensus::Eip658Value;
 use alloy_eips::eip2930::AccessListWithGasUsed;
 use alloy_primitives::TxKind::{Call, Create};
-use alloy_primitives::{Uint, U256, U64};
+use alloy_primitives::{Address, Bytes, Uint, B256, U256, U64};
 use alloy_rlp::Encodable;
+use alloy_rpc_types::state::StateOverride;
+use alloy_rpc_types::{
+    AnyReceiptEnvelope, AnyTransactionReceipt, BlockOverrides, Log, ReceiptWithBloom,
+    TransactionReceipt,
+};
+use alloy_rpc_types_trace::geth::{GethDebugTracingOptions, GethTrace};
+use alloy_serde::OtherFields;
 use citrea_primitives::basefee::calculate_next_block_base_fee;
 use citrea_primitives::forks::FORKS;
 use jsonrpsee::core::RpcResult;
@@ -14,12 +21,6 @@ use reth_primitives::{
 };
 use reth_provider::ProviderError;
 use reth_rpc_eth_types::error::{EthApiError, EthResult, RevertError, RpcInvalidTransactionError};
-use reth_rpc_types::state::StateOverride;
-use reth_rpc_types::trace::geth::{GethDebugTracingOptions, GethTrace};
-use reth_rpc_types::{
-    AnyReceiptEnvelope, AnyTransactionReceipt, BlockOverrides, Log, OtherFields, ReceiptWithBloom,
-    TransactionReceipt,
-};
 use reth_rpc_types_compat::block::from_primitive_with_hash;
 use revm::primitives::{
     BlobExcessGasAndPrice, BlockEnv, CfgEnvWithHandlerCfg, EVMError, ExecutionResult, HaltReason,
@@ -108,7 +109,7 @@ impl<C: sov_modules_api::Context> Evm<C> {
     /// Handler for: `eth_chainId`
     #[rpc_method(name = "eth_chainId")]
     pub fn chain_id(&self, working_set: &mut WorkingSet<C>) -> RpcResult<Option<U64>> {
-        let chain_id = reth_primitives::U64::from(
+        let chain_id = U64::from(
             self.cfg
                 .get(working_set)
                 .expect("EVM config must be set at genesis")
@@ -122,7 +123,7 @@ impl<C: sov_modules_api::Context> Evm<C> {
     #[rpc_method(name = "eth_getBlockByHash")]
     pub fn get_block_by_hash(
         &self,
-        block_hash: reth_primitives::B256,
+        block_hash: B256,
         details: Option<bool>,
         working_set: &mut WorkingSet<C>,
     ) -> RpcResult<Option<reth_rpc_types::RichBlock>> {
@@ -183,7 +184,7 @@ impl<C: sov_modules_api::Context> Evm<C> {
 
         // Build rpc transactions response
         let transactions = match details {
-            Some(true) => reth_rpc_types::BlockTransactions::Full(
+            Some(true) => alloy_rpc_types::BlockTransactions::Full(
                 transactions
                     .iter()
                     .enumerate()
@@ -198,7 +199,7 @@ impl<C: sov_modules_api::Context> Evm<C> {
                     })
                     .collect::<Vec<_>>(),
             ),
-            _ => reth_rpc_types::BlockTransactions::Hashes({
+            _ => alloy_rpc_types::BlockTransactions::Hashes({
                 transactions
                     .iter()
                     .map(|tx| tx.signed_transaction.hash)
@@ -283,10 +284,10 @@ impl<C: sov_modules_api::Context> Evm<C> {
     #[rpc_method(name = "eth_getBalance")]
     pub fn get_balance(
         &self,
-        address: reth_primitives::Address,
+        address: Address,
         block_id: Option<BlockId>,
         working_set: &mut WorkingSet<C>,
-    ) -> RpcResult<reth_primitives::U256> {
+    ) -> RpcResult<U256> {
         self.set_state_to_end_of_evm_block_by_block_id(block_id, working_set)?;
 
         // Specs from https://ethereum.org/en/developers/docs/apis/json-rpc
@@ -303,11 +304,11 @@ impl<C: sov_modules_api::Context> Evm<C> {
     #[rpc_method(name = "eth_getStorageAt")]
     pub fn get_storage_at(
         &self,
-        address: reth_primitives::Address,
-        index: reth_primitives::U256,
+        address: Address,
+        index: U256,
         block_id: Option<BlockId>,
         working_set: &mut WorkingSet<C>,
-    ) -> RpcResult<reth_primitives::B256> {
+    ) -> RpcResult<B256> {
         // Specs from https://ethereum.org/en/developers/docs/apis/json-rpc
 
         self.set_state_to_end_of_evm_block_by_block_id(block_id, working_set)?;
@@ -329,10 +330,10 @@ impl<C: sov_modules_api::Context> Evm<C> {
     #[rpc_method(name = "eth_getTransactionCount")]
     pub fn get_transaction_count(
         &self,
-        address: reth_primitives::Address,
+        address: Address,
         block_id: Option<BlockId>,
         working_set: &mut WorkingSet<C>,
-    ) -> RpcResult<reth_primitives::U64> {
+    ) -> RpcResult<U64> {
         // Specs from https://ethereum.org/en/developers/docs/apis/json-rpc
         self.set_state_to_end_of_evm_block_by_block_id(block_id, working_set)?;
 
@@ -349,10 +350,10 @@ impl<C: sov_modules_api::Context> Evm<C> {
     #[rpc_method(name = "eth_getCode")]
     pub fn get_code(
         &self,
-        address: reth_primitives::Address,
+        address: Address,
         block_id: Option<BlockId>,
         working_set: &mut WorkingSet<C>,
-    ) -> RpcResult<reth_primitives::Bytes> {
+    ) -> RpcResult<Bytes> {
         let block_number = match block_id {
             Some(BlockId::Number(block_num)) => block_num,
             Some(BlockId::Hash(block_hash)) => {
@@ -391,8 +392,8 @@ impl<C: sov_modules_api::Context> Evm<C> {
     #[rpc_method(name = "eth_getTransactionByBlockHashAndIndex")]
     pub fn get_transaction_by_block_hash_and_index(
         &self,
-        block_hash: reth_primitives::B256,
-        index: reth_primitives::U64,
+        block_hash: B256,
+        index: U64,
         working_set: &mut WorkingSet<C>,
     ) -> RpcResult<Option<reth_rpc_types::Transaction>> {
         let mut accessory_state = working_set.accessory_state();
@@ -440,7 +441,7 @@ impl<C: sov_modules_api::Context> Evm<C> {
     pub fn get_transaction_by_block_number_and_index(
         &self,
         block_number: BlockNumberOrTag,
-        index: reth_primitives::U64,
+        index: U64,
         working_set: &mut WorkingSet<C>,
     ) -> RpcResult<Option<reth_rpc_types::Transaction>> {
         let block_number = match self.block_number_for_id(&block_number, working_set) {
@@ -486,7 +487,7 @@ impl<C: sov_modules_api::Context> Evm<C> {
     #[rpc_method(name = "eth_getTransactionReceipt")]
     pub fn get_transaction_receipt(
         &self,
-        hash: reth_primitives::B256,
+        hash: B256,
         working_set: &mut WorkingSet<C>,
     ) -> RpcResult<Option<AnyTransactionReceipt>> {
         let mut accessory_state = working_set.accessory_state();
@@ -525,7 +526,7 @@ impl<C: sov_modules_api::Context> Evm<C> {
         state_overrides: Option<StateOverride>,
         block_overrides: Option<BlockOverrides>,
         working_set: &mut WorkingSet<C>,
-    ) -> RpcResult<reth_primitives::Bytes> {
+    ) -> RpcResult<Bytes> {
         let block_number = match block_id {
             Some(BlockId::Number(block_num)) => block_num,
             Some(BlockId::Hash(block_hash)) => {
@@ -606,10 +607,7 @@ impl<C: sov_modules_api::Context> Evm<C> {
 
     /// Handler for: `eth_blockNumber`
     #[rpc_method(name = "eth_blockNumber")]
-    pub fn block_number(
-        &self,
-        working_set: &mut WorkingSet<C>,
-    ) -> RpcResult<reth_primitives::U256> {
+    pub fn block_number(&self, working_set: &mut WorkingSet<C>) -> RpcResult<U256> {
         let block_number = U256::from(
             self.blocks
                 .len(&mut working_set.accessory_state())
@@ -788,7 +786,7 @@ impl<C: sov_modules_api::Context> Evm<C> {
         request: reth_rpc_types::TransactionRequest,
         block_number: Option<BlockNumberOrTag>,
         working_set: &mut WorkingSet<C>,
-    ) -> RpcResult<reth_primitives::U256> {
+    ) -> RpcResult<U256> {
         let estimated = self.estimate_tx_expenses(request, block_number, working_set)?;
 
         // TODO: this assumes all blocks have the same gas limit
@@ -824,9 +822,9 @@ impl<C: sov_modules_api::Context> Evm<C> {
     #[rpc_method(name = "eth_getBlockTransactionCountByHash")]
     pub fn eth_get_block_transaction_count_by_hash(
         &self,
-        block_hash: reth_primitives::B256,
+        block_hash: B256,
         working_set: &mut WorkingSet<C>,
-    ) -> RpcResult<Option<reth_primitives::U256>> {
+    ) -> RpcResult<Option<U256>> {
         // Get the number of transactions in a block given blockhash
         let block = self.get_block_by_hash(block_hash, None, working_set)?;
         match block {
@@ -841,7 +839,7 @@ impl<C: sov_modules_api::Context> Evm<C> {
         &self,
         block_number: BlockNumberOrTag,
         working_set: &mut WorkingSet<C>,
-    ) -> RpcResult<Option<reth_primitives::U256>> {
+    ) -> RpcResult<Option<U256>> {
         // Get the number of transactions in a block given block number
         let block = self.get_block_by_number(Some(block_number), None, working_set)?;
         match block {
@@ -1132,7 +1130,7 @@ impl<C: sov_modules_api::Context> Evm<C> {
     /// RPC method is moved to sequencer and ethereum-rpc modules
     pub fn get_transaction_by_hash(
         &self,
-        hash: reth_primitives::B256,
+        hash: B256,
         working_set: &mut WorkingSet<C>,
     ) -> RpcResult<Option<reth_rpc_types::Transaction>> {
         let mut accessory_state = working_set.accessory_state();
@@ -1432,7 +1430,7 @@ impl<C: sov_modules_api::Context> Evm<C> {
         &self,
         block_number: u64,
         working_set: &mut WorkingSet<C>,
-    ) -> Option<reth_primitives::B256> {
+    ) -> Option<B256> {
         let block = self
             .blocks
             .get(block_number as usize, &mut working_set.accessory_state())?;
@@ -1522,7 +1520,7 @@ impl<C: sov_modules_api::Context> Evm<C> {
     /// If block not found returns None
     pub fn get_block_number_by_block_hash(
         &self,
-        block_hash: reth_primitives::B256,
+        block_hash: B256,
         working_set: &mut WorkingSet<C>,
     ) -> Option<u64> {
         let block_number = self

@@ -80,18 +80,14 @@ pub struct Evm<C: sov_modules_api::Context> {
 
     /// Mapping from code hash to code. Used for lazy-loading code into a contract account.
     #[state(rename = "c")]
-    pub(crate) code:
-        sov_modules_api::StateMap<reth_primitives::B256, revm::primitives::Bytecode, BcsCodec>,
+    pub(crate) code: sov_modules_api::StateMap<B256, revm::primitives::Bytecode, BcsCodec>,
 
     /// Mapping from code hash to code. Used for lazy-loading code into a contract account.
     /// This is the new offchain version which is not counted in the state diff.
     /// Activated after FORK1
     #[state(rename = "occ")]
-    pub(crate) offchain_code: sov_modules_api::OffchainStateMap<
-        reth_primitives::B256,
-        revm::primitives::Bytecode,
-        BcsCodec,
-    >,
+    pub(crate) offchain_code:
+        sov_modules_api::OffchainStateMap<B256, revm::primitives::Bytecode, BcsCodec>,
 
     /// Chain configuration. This field is set in genesis.
     #[state]
@@ -156,8 +152,7 @@ pub struct Evm<C: sov_modules_api::Context> {
     /// Used only by the RPC: block_hash => block_number mapping,
     #[cfg(feature = "native")]
     #[state]
-    pub(crate) block_hashes:
-        sov_modules_api::AccessoryStateMap<reth_primitives::B256, u64, BcsCodec>,
+    pub(crate) block_hashes: sov_modules_api::AccessoryStateMap<B256, u64, BcsCodec>,
 
     /// Used only by the RPC: List of processed transactions.
     #[cfg(feature = "native")]
@@ -168,8 +163,7 @@ pub struct Evm<C: sov_modules_api::Context> {
     /// Used only by the RPC: transaction_hash => transaction_index mapping.
     #[cfg(feature = "native")]
     #[state]
-    pub(crate) transaction_hashes:
-        sov_modules_api::AccessoryStateMap<reth_primitives::B256, u64, BcsCodec>,
+    pub(crate) transaction_hashes: sov_modules_api::AccessoryStateMap<B256, u64, BcsCodec>,
 
     /// Used only by the RPC: Receipts.
     #[cfg(feature = "native")]
