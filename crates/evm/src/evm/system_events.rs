@@ -1,5 +1,5 @@
 use alloy_consensus::TxEip1559;
-use alloy_primitives::{address, Address, TxKind, B256, U256};
+use alloy_primitives::{address, Address, TxKind, U256};
 use reth_primitives::{
     Signature, Transaction, TransactionSigned, TransactionSignedEcRecovered,
     TransactionSignedNoHash,
