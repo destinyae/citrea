@@ -1,6 +1,6 @@
 use std::ops::Range;
 
-use alloy_primitives::{Address, B256};
+use alloy_primitives::{Address, Sealable, B256};
 use reth_primitives::{Header, SealedHeader, TransactionSigned};
 
 /// Rlp encoded evm transaction.
@@ -46,7 +46,7 @@ pub(crate) struct Block {
 impl Block {
     pub(crate) fn seal(self) -> SealedBlock {
         SealedBlock {
-            header: self.header.seal_slow(),
+            header: self.header.seal_ref_slow(),
             l1_fee_rate: self.l1_fee_rate,
             l1_hash: self.l1_hash,
             transactions: self.transactions,
