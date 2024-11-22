@@ -489,13 +489,17 @@ impl<C: sov_modules_api::Context> Evm<C> {
             .get(tx.block_number as usize, &mut working_set.accessory_state())
             .expect("Block number for known transaction must be set");
 
-        let transaction = reth_rpc_types_compat::transaction::from_recovered_with_block_context(
-            tx.into(),
-            block.header.hash(),
-            block.header.number,
-            block.header.base_fee_per_gas,
-            (tx_number - block.transactions.start) as usize,
-        );
+        let tx_info = TransactionInfo {
+            hash: Some(tx.hash),
+            block_hash: Some(block.header.hash()),
+            block_number: Some(tx.block_number),
+            base_fee: block.header.base_fee_per_gas.map(u128::from),
+            index: Some((tx_number - block.transactions.start) as u64),
+        };
+
+        let transaction = reth_rpc_types_compat::transaction::from_recovered_with_block_context::<
+            EthTxBuilder,
+        >(tx.into(), tx_info);
 
         Ok(Some(transaction))
     }
