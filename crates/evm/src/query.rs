@@ -463,7 +463,7 @@ impl<C: sov_modules_api::Context> Evm<C> {
     ) -> RpcResult<Option<reth_rpc_types::Transaction>> {
         let block_number = match self.block_number_for_id(&block_number, working_set) {
             Ok(block_number) => block_number,
-            Err(EthApiError::UnknownBlockNumber) => return Ok(None),
+            Err(EthApiError::HeaderNotFound(_)) => return Ok(None),
             Err(err) => return Err(err.into()),
         };
 
@@ -565,7 +565,7 @@ impl<C: sov_modules_api::Context> Evm<C> {
                 _ => {
                     let block = self
                         .get_sealed_block_by_number(Some(block_number), working_set)?
-                        .ok_or(EthApiError::UnknownBlockNumber)?;
+                        .ok_or(EthApiError::HeaderNotFound(block_id.unwrap()))?;
 
                     sealed_block_to_block_env(&block.header)
                 }
@@ -660,7 +660,8 @@ impl<C: sov_modules_api::Context> Evm<C> {
                 _ => {
                     let block = self
                         .get_sealed_block_by_number(block_number, working_set)?
-                        .ok_or(EthApiError::UnknownBlockNumber)?;
+                        // Is this ok : block_number.unwrap_or_default()
+                        .ok_or(EthApiError::HeaderNotFound(block_number.unwrap_or_default().into()))?;
                     (block.l1_fee_rate, sealed_block_to_block_env(&block.header))
                 }
             };
@@ -775,7 +776,7 @@ impl<C: sov_modules_api::Context> Evm<C> {
                 _ => {
                     let block = self
                         .get_sealed_block_by_number(block_number, working_set)?
-                        .ok_or(EthApiError::UnknownBlockNumber)?;
+                        .ok_or(EthApiError::HeaderNotFound(block_number.unwrap_or_default().into()))?;
                     (
                         block.l1_fee_rate,
                         sealed_block_to_block_env(&block.header), // correct spec will be set later
@@ -1174,13 +1175,19 @@ impl<C: sov_modules_api::Context> Evm<C> {
                     tx.block_number,
                     tx.signed_transaction.hash));
 
-            reth_rpc_types_compat::transaction::from_recovered_with_block_context(
-                tx.into(),
-                block.header.hash(),
-                block.header.number,
-                block.header.base_fee_per_gas,
-                (number - block.transactions.start) as usize,
-            )
+                    let tx_info = TransactionInfo {
+                        hash: Some(tx.signed_transaction.hash),
+                        block_hash: Some(block.header.hash()),
+                        block_number: Some(block.header.number),
+                        base_fee: block.header.base_fee_per_gas.map(u128::from),
+                        index: Some((number - block.transactions.start) as u64),
+                    };
+            
+                    let transaction = reth_rpc_types_compat::transaction::from_recovered_with_block_context::<
+                        EthTxBuilder,
+                    >(tx.into(), tx_info);
+
+            Ok(Some(transaction))
         });
 
         Ok(transaction)
@@ -1196,7 +1203,7 @@ impl<C: sov_modules_api::Context> Evm<C> {
     ) -> RpcResult<Vec<GethTrace>> {
         let sealed_block = self
             .get_sealed_block_by_number(Some(BlockNumberOrTag::Number(block_number)), working_set)?
-            .ok_or_else(|| EthApiError::UnknownBlockNumber)?;
+            .ok_or_else(|| EthApiError::HeaderNotFound(block_number.into()))?;
 
         let tx_range = sealed_block.transactions.clone();
         if tx_range.is_empty() {
@@ -1490,12 +1497,12 @@ impl<C: sov_modules_api::Context> Evm<C> {
         match block_id {
             BlockNumberOrTag::Earliest => Ok(0),
             BlockNumberOrTag::Latest => Ok(latest_block_number),
-            BlockNumberOrTag::Pending => Err(EthApiError::UnknownBlockNumber),
+            BlockNumberOrTag::Pending => Err(EthApiError::HeaderNotFound((*block_id).into())),
             BlockNumberOrTag::Number(block_number) => {
                 if *block_number < self.blocks.len(&mut working_set.accessory_state()) as u64 {
                     Ok(*block_number)
                 } else {
-                    Err(EthApiError::UnknownBlockNumber)
+                    Err(EthApiError::HeaderNotFound((*block_id).into()))
                 }
             }
             _ => Err(EthApiError::InvalidParams(
@@ -1577,7 +1584,7 @@ impl<C: sov_modules_api::Context> Evm<C> {
                             .header
                             .number;
                         if num > curr_block_number {
-                            return Err(EthApiError::UnknownBlockNumber);
+                            return Err(EthApiError::HeaderNotFound(block_id.unwrap()));
                         }
                         set_state_to_end_of_evm_block(num, working_set);
                     }
