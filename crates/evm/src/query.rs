@@ -439,7 +439,7 @@ impl<C: sov_modules_api::Context> Evm<C> {
             .expect("Block number for known transaction must be set");
 
         let tx_info = TransactionInfo {
-            hash: Some(tx.hash),
+            hash: Some(tx.signed_transaction.hash),
             block_hash: Some(block.header.hash()),
             block_number: Some(tx.block_number),
             base_fee: block.header.base_fee_per_gas.map(u128::from),
@@ -490,7 +490,7 @@ impl<C: sov_modules_api::Context> Evm<C> {
             .expect("Block number for known transaction must be set");
 
         let tx_info = TransactionInfo {
-            hash: Some(tx.hash),
+            hash: Some(tx.signed_transaction.hash),
             block_hash: Some(block.header.hash()),
             block_number: Some(tx.block_number),
             base_fee: block.header.base_fee_per_gas.map(u128::from),
