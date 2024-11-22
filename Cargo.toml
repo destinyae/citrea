@@ -142,6 +142,7 @@ revm-primitives = { version = "10.0.0", default-features = false }
 alloy-trie = { version = "0.6", default-features = false }
 alloy-rlp = { version = "0.3.8", default-features = false }
 alloy-rpc-types = { version = "0.4.2", features = ["eth"], default-features = false }
+alloy-rpc-types-eth = { version = "0.4.2", default-features = false }
 alloy-rpc-types-trace = { version = "0.4.2", default-features = false }
 alloy-primitives = { version = "0.8.7", default-features = false }
 alloy-serde = { version = "0.4.2", default-features = false }

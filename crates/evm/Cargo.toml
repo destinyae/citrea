@@ -33,14 +33,16 @@ alloy-consensus = { workspace = true }
 alloy-eips = { workspace = true }
 alloy-network = { workspace = true, optional = true}
 alloy-primitives = { workspace = true, features = ["rand", "serde"] }
-alloy-rlp = { workspace = true, optional = true }
+alloy-rlp = { workspace = true }
 alloy-rpc-types = { workspace = true, optional = true }
+alloy-rpc-types-eth = { version = "0.4.2", optional = true}
 alloy-rpc-types-trace = { workspace = true, optional = true }
 alloy-serde = { workspace = true, optional = true}
 alloy-sol-types = { workspace = true }
 itertools = { workspace = true, optional = true }
 reth-primitives = { workspace = true, default-features = false }
 reth-provider = { workspace = true, optional = true }
+reth-rpc = { workspace = true, optional = true }
 reth-rpc-eth-types = { workspace = true, optional = true }
 reth-rpc-eth-api = { workspace = true, optional = true }
 reth-rpc-server-types = { workspace = true, optional = true }
@@ -76,6 +78,7 @@ native = [
   "sov-state/native",
   "sov-modules-api/native",
 
+  "reth-rpc",
   "reth-rpc-eth-types",
   "reth-rpc-eth-api",
   "reth-rpc-server-types",
@@ -83,8 +86,9 @@ native = [
   "reth-transaction-pool",
   "revm-inspectors",
   "reth-provider",
-  "alloy-rlp",
+  # "alloy-rlp",
   "alloy-rpc-types",
+  "alloy-rpc-types-eth",
   "alloy-rpc-types-trace",
   "alloy-serde",
   "alloy-network",

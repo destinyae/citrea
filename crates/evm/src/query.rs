@@ -10,17 +10,19 @@ use alloy_rlp::Encodable;
 use alloy_rpc_types::state::StateOverride;
 use alloy_rpc_types::{
     AnyNetworkBlock, AnyReceiptEnvelope, AnyTransactionReceipt, BlockOverrides, Log,
-    ReceiptWithBloom, TransactionReceipt,
+    ReceiptWithBloom, TransactionInfo, TransactionReceipt,
 };
+use alloy_rpc_types_eth::Block as AlloyRpcBlock;
 use alloy_rpc_types_trace::geth::{GethDebugTracingOptions, GethTrace};
 use alloy_serde::OtherFields;
 use citrea_primitives::basefee::calculate_next_block_base_fee;
 use citrea_primitives::forks::FORKS;
 use jsonrpsee::core::RpcResult;
 use reth_primitives::{
-    Block, BlockId, BlockNumberOrTag, SealedHeader, TransactionSignedEcRecovered,
+    Block, BlockBody, BlockId, BlockNumberOrTag, SealedHeader, TransactionSignedEcRecovered,
 };
 use reth_provider::ProviderError;
+use reth_rpc::eth::EthTxBuilder;
 use reth_rpc_eth_api::types::RpcBlock;
 use reth_rpc_eth_types::error::{
     ensure_success, EthApiError, EthResult, RevertError, RpcInvalidTransactionError,
@@ -172,20 +174,20 @@ impl<C: sov_modules_api::Context> Evm<C> {
             })
             .collect();
 
-        let block = Block {
+        let primitive_block = Block {
             header: sealed_block.header.header().clone(),
-            body: transactions
-                .iter()
-                .map(|tx| tx.signed_transaction.clone())
-                .collect(),
-            ommers: Default::default(),
-            withdrawals: Default::default(),
-            requests: None,
+            body: BlockBody {
+                transactions: transactions
+                    .iter()
+                    .map(|tx| tx.signed_transaction.clone())
+                    .collect(),
+                ommers: Default::default(),
+                withdrawals: Default::default(),
+                requests: None,
+            },
         };
 
-        // TODO: Fix
-
-        let size = block.length();
+        let size = primitive_block.length();
 
         // Build rpc transactions response
         let transactions = match details {
@@ -193,14 +195,17 @@ impl<C: sov_modules_api::Context> Evm<C> {
                 transactions
                     .iter()
                     .enumerate()
-                    .map(|(id, tx)| {
-                        reth_rpc_types_compat::transaction::from_recovered_with_block_context(
-                            tx.clone().into(),
-                            header.hash.expect("Block must be already sealed"),
-                            header.number,
-                            header.base_fee_per_gas.map(|bfpg| bfpg.try_into().unwrap()), // u64 max is 18446744073 gwei, for the conversion to fail the base fee per gas would have to be higher than that
-                            id,
-                        )
+                    .map(|(idx, tx)| {
+                        let tx_info = TransactionInfo {
+                            hash: Some(tx.signed_transaction.hash),
+                            block_hash: Some(header.hash),
+                            block_number: Some(tx.block_number),
+                            base_fee: header.base_fee_per_gas.map(u128::from),
+                            index: Some(idx as u64),
+                        };
+                        reth_rpc_types_compat::transaction::from_recovered_with_block_context::<
+                            EthTxBuilder,
+                        >(tx.clone().into(), tx_info)
                     })
                     .collect::<Vec<_>>(),
             ),
@@ -212,13 +217,16 @@ impl<C: sov_modules_api::Context> Evm<C> {
             }),
         };
 
-        // Build rpc block response
-        let block = reth_rpc_types::Block {
+        let block = AlloyRpcBlock {
             header,
-            size: Some(U256::from(size)),
             uncles: Default::default(),
             transactions,
             withdrawals: Default::default(),
+            size: Some(U256::from(size)),
+        };
+
+        let rpc_block = AnyNetworkBlock {
+            inner: block,
             other: OtherFields::new(BTreeMap::<String, _>::from([
                 (
                     "l1FeeRate".to_string(),
@@ -231,7 +239,7 @@ impl<C: sov_modules_api::Context> Evm<C> {
             ])),
         };
 
-        Ok(Some(block.into()))
+        Ok(Some(rpc_block))
     }
 
     /// Handler for: `eth_getBlockReceipts`
