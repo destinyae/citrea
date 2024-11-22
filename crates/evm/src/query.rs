@@ -3,13 +3,14 @@ use std::ops::{Range, RangeInclusive};
 
 use alloy_consensus::Eip658Value;
 use alloy_eips::eip2930::AccessListWithGasUsed;
+use alloy_network::AnyNetwork;
 use alloy_primitives::TxKind::{Call, Create};
 use alloy_primitives::{Address, Bytes, Uint, B256, U256, U64};
 use alloy_rlp::Encodable;
 use alloy_rpc_types::state::StateOverride;
 use alloy_rpc_types::{
-    AnyReceiptEnvelope, AnyTransactionReceipt, BlockOverrides, Log, ReceiptWithBloom,
-    TransactionReceipt,
+    AnyNetworkBlock, AnyReceiptEnvelope, AnyTransactionReceipt, BlockOverrides, Log,
+    ReceiptWithBloom, TransactionReceipt,
 };
 use alloy_rpc_types_trace::geth::{GethDebugTracingOptions, GethTrace};
 use alloy_serde::OtherFields;
@@ -20,10 +21,11 @@ use reth_primitives::{
     Block, BlockId, BlockNumberOrTag, SealedHeader, TransactionSignedEcRecovered,
 };
 use reth_provider::ProviderError;
+use reth_rpc_eth_api::types::RpcBlock;
 use reth_rpc_eth_types::error::{
     ensure_success, EthApiError, EthResult, RevertError, RpcInvalidTransactionError,
 };
-use reth_rpc_types_compat::block::from_primitive_with_hash;
+use reth_rpc_types_compat::block::{from_block, from_primitive_with_hash};
 use revm::primitives::{
     BlobExcessGasAndPrice, BlockEnv, CfgEnvWithHandlerCfg, EVMError, ExecutionResult, HaltReason,
     InvalidTransaction, SpecId, TransactTo,
@@ -151,7 +153,7 @@ impl<C: sov_modules_api::Context> Evm<C> {
         block_number: Option<BlockNumberOrTag>,
         details: Option<bool>,
         working_set: &mut WorkingSet<C>,
-    ) -> RpcResult<Option<reth_rpc_types::RichBlock>> {
+    ) -> RpcResult<Option<AnyNetworkBlock>> {
         let sealed_block = match self.get_sealed_block_by_number(block_number, working_set)? {
             Some(sealed_block) => sealed_block,
             None => return Ok(None), // if block doesn't exist return null
@@ -181,6 +183,8 @@ impl<C: sov_modules_api::Context> Evm<C> {
             requests: None,
         };
 
+        // TODO: Fix
+
         let size = block.length();
 
         // Build rpc transactions response
@@ -193,7 +197,7 @@ impl<C: sov_modules_api::Context> Evm<C> {
                         reth_rpc_types_compat::transaction::from_recovered_with_block_context(
                             tx.clone().into(),
                             header.hash.expect("Block must be already sealed"),
-                            header.number.expect("Block must be already sealed"),
+                            header.number,
                             header.base_fee_per_gas.map(|bfpg| bfpg.try_into().unwrap()), // u64 max is 18446744073 gwei, for the conversion to fail the base fee per gas would have to be higher than that
                             id,
                         )

@@ -85,6 +85,7 @@ pub(crate) fn trace_transaction<C: sov_modules_api::Context>(
                 }
                 // TODO: either implement or return unsupported
                 GethDebugBuiltInTracerType::MuxTracer => todo!("MuxTracer"),
+                GethDebugBuiltInTracerType::FlatCallTracer => todo!("FlatCallTracer"),
             },
             GethDebugTracerType::JsTracer(_code) => {
                 // This also requires DatabaseRef trait
