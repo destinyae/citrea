@@ -131,7 +131,7 @@ impl<C: sov_modules_api::Context> Evm<C> {
         block_hash: B256,
         details: Option<bool>,
         working_set: &mut WorkingSet<C>,
-    ) -> RpcResult<Option<reth_rpc_types::RichBlock>> {
+    ) -> RpcResult<Option<AnyNetworkBlock>> {
         // if block hash is not known, return None
         let block_number = match self
             .block_hashes
