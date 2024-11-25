@@ -3,10 +3,11 @@
 
 // Adopted from: https://github.com/paradigmxyz/reth/blob/main/crates/rpc/rpc/src/eth/gas_oracle.rs
 
+use alloy_primitives::{B256, U256};
 use citrea_evm::{Evm, SYSTEM_SIGNER};
 use citrea_primitives::basefee::calculate_next_block_base_fee;
 use parking_lot::Mutex;
-use reth_primitives::{BlockNumberOrTag, B256, U256};
+use reth_primitives::BlockNumberOrTag;
 use reth_rpc_eth_types::error::{EthApiError, EthResult, RpcInvalidTransactionError};
 use reth_rpc_types::{BlockTransactions, FeeHistory};
 use serde::{Deserialize, Serialize};

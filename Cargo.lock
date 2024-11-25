@@ -2832,6 +2832,9 @@ dependencies = [
 name = "ethereum-rpc"
 version = "0.5.0-rc.1"
 dependencies = [
+ "alloy-primitives",
+ "alloy-rpc-types",
+ "alloy-rpc-types-trace",
  "anyhow",
  "borsh",
  "citrea-evm",

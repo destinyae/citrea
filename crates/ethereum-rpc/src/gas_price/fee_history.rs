@@ -1,7 +1,7 @@
 //! Consist of types adjacent to the fee history cache and its configs
 use std::fmt::Debug;
 
-use reth_primitives::B256;
+use alloy_primitives::B256;
 use reth_rpc_eth_types::EthApiError;
 use reth_rpc_types::{
     AnyTransactionReceipt, Block, BlockTransactions, Rich, Transaction, TxGasAndReward,

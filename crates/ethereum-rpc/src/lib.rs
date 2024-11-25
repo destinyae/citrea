@@ -5,6 +5,7 @@ mod trace;
 
 use std::sync::Arc;
 
+use alloy_primitives::{keccak256, Bytes, B256, U256};
 #[cfg(feature = "local")]
 pub use citrea_evm::DevSigner;
 use citrea_evm::{Evm, Filter};
@@ -13,7 +14,7 @@ pub use gas_price::fee_history::FeeHistoryCacheConfig;
 pub use gas_price::gas_oracle::GasPriceOracleConfig;
 use jsonrpsee::types::ErrorObjectOwned;
 use jsonrpsee::RpcModule;
-use reth_primitives::{keccak256, BlockNumberOrTag, Bytes, B256, U256};
+use reth_primitives::BlockNumberOrTag;
 use reth_rpc_eth_types::EthApiError;
 use reth_rpc_types::trace::geth::{GethDebugTracingOptions, GethTrace};
 use reth_rpc_types::{FeeHistory, Index};
