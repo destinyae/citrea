@@ -37,8 +37,13 @@ tower-http = { workspace = true }
 tracing = { workspace = true }
 tracing-subscriber = { workspace = true }
 
+alloy-genesis = { workspace = true }
+alloy-primitives = { workspace = true }
+alloy-rpc-types = { workspace = true }
+alloy-rpc-types-eth = { workspace = true }
 reth-chainspec = { workspace = true }
 reth-db = { workspace = true }
+reth-execution-types ={ workspace = true }
 reth-primitives = { workspace = true }
 reth-provider = { workspace = true }
 reth-rpc-eth-types = { workspace = true }

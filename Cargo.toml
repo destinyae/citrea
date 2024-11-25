@@ -123,6 +123,7 @@ revm-inspectors = { version = "=0.8.1", default-features = false }
 reth-primitives = { git = "https://github.com/paradigmxyz/reth", rev = "1ba631ba9581973e7c6cadeea92cfe1802aceb4a", default-features = false }
 reth-chainspec = { git = "https://github.com/paradigmxyz/reth", rev = "1ba631ba9581973e7c6cadeea92cfe1802aceb4a", default-features = false }
 reth-errors = { git = "https://github.com/paradigmxyz/reth", rev = "1ba631ba9581973e7c6cadeea92cfe1802aceb4a", default-features = false }
+reth-execution-types = { git = "https://github.com/paradigmxyz/reth", rev = "1ba631ba9581973e7c6cadeea92cfe1802aceb4a", default-features = false }
 reth-rpc-eth-types = { git = "https://github.com/paradigmxyz/reth", rev = "1ba631ba9581973e7c6cadeea92cfe1802aceb4a", default-features = false }
 reth-rpc-eth-api = { git = "https://github.com/paradigmxyz/reth", rev = "1ba631ba9581973e7c6cadeea92cfe1802aceb4a", default-features = false }
 reth-rpc-server-types = { git = "https://github.com/paradigmxyz/reth", rev = "1ba631ba9581973e7c6cadeea92cfe1802aceb4a", default-features = false }
@@ -139,6 +140,7 @@ reth-stages = { git = "https://github.com/paradigmxyz/reth", rev = "1ba631ba9581
 revm = { version = "14.0.3", features = ["serde"], default-features = false }
 # forcing cargo for this version or else chooses 3.1.1 and there is some dependency conflicts
 revm-primitives = { version = "10.0.0", default-features = false }
+alloy-genesis = { version = "0.4.2", default-features = false }
 alloy-trie = { version = "0.6", default-features = false }
 alloy-rlp = { version = "0.3.8", default-features = false }
 alloy-rpc-types = { version = "0.4.2", features = ["eth"], default-features = false }
