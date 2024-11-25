@@ -52,7 +52,7 @@ impl<C: sov_modules_api::Context> CitreaMempool<C> {
                 Genesis::default()
                     .with_nonce(nonce.into())
                     .with_timestamp(genesis_block.header.timestamp)
-                    .with_extra_data(genesis_block.header.extra_data)
+                    .with_extra_data(genesis_block.header.extra_data.clone())
                     .with_gas_limit(genesis_block.header.gas_limit)
                     .with_difficulty(genesis_block.header.difficulty)
                     .with_mix_hash(genesis_mix_hash)
