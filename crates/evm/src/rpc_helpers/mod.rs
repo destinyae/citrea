@@ -1,6 +1,5 @@
 use std::collections::HashMap;
 
-use alloy_primitives::map::FbBuildHasher;
 use alloy_primitives::{keccak256, Address};
 use alloy_rpc_types::state::AccountOverride;
 use alloy_rpc_types::BlockOverrides;
@@ -24,7 +23,7 @@ use crate::db::EvmDb;
 #[cfg(feature = "native")]
 /// Applies all instances [`AccountOverride`] to the [`EvmDb`].
 pub(crate) fn apply_state_overrides<C: sov_modules_api::Context>(
-    state_overrides: HashMap<Address, AccountOverride, FbBuildHasher<20>>,
+    state_overrides: HashMap<Address, AccountOverride, alloy_primitives::map::FbBuildHasher<20>>,
     db: &mut EvmDb<C>,
 ) -> EthResult<()> {
     for (address, account_overrides) in state_overrides {
