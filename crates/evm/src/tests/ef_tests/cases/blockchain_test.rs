@@ -213,15 +213,16 @@ impl Case for BlockchainTestCase {
                 // Decode and insert blocks, creating a chain of blocks for the test case.
                 for block in case.blocks.iter() {
                     let decoded = SealedBlock::decode(&mut block.rlp.as_ref())?;
-                    let txs: Vec<RlpEvmTransaction> = decoded
+                    let txs = decoded
                         .body
+                        .transactions
                         .iter()
                         .map(|t| {
                             let mut buffer = Vec::<u8>::new();
                             t.encode(&mut buffer);
                             RlpEvmTransaction { rlp: buffer }
                         })
-                        .collect();
+                        .collect::<Vec<_>>();
 
                     (working_set, storage) = self.execute_transactions(
                         &mut evm,

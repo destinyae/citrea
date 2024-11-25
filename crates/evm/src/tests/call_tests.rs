@@ -2,12 +2,11 @@ use std::collections::BTreeMap;
 use std::str::FromStr;
 
 use alloy_eips::BlockId;
+use alloy_primitives::{address, b256, Address, Bytes, TxKind, B256, U64};
+use alloy_rpc_types::BlockOverrides;
+use alloy_rpc_types::{TransactionInput, TransactionRequest};
 use reth_primitives::constants::ETHEREUM_BLOCK_GAS_LIMIT;
-use reth_primitives::{
-    address, b256, Address, BlockNumberOrTag, Bytes, Log, LogData, TxKind, B256, U64,
-};
-use reth_rpc_types::request::{TransactionInput, TransactionRequest};
-use reth_rpc_types::BlockOverrides;
+use reth_primitives::{BlockNumberOrTag, Log, LogData};
 use revm::primitives::{hex, KECCAK_EMPTY, U256};
 use sov_modules_api::default_context::DefaultContext;
 use sov_modules_api::hooks::HookSoftConfirmationInfo;
@@ -785,6 +784,7 @@ fn test_block_hash_in_evm() {
         blob_versioned_hashes: None,
         transaction_type: None,
         sidecar: None,
+        authorization_list: None,
     };
 
     for i in 0..=1000 {
@@ -904,7 +904,7 @@ fn test_block_gas_limit() {
         .unwrap()
         .unwrap();
 
-    assert_eq!(block.header.gas_limit, ETHEREUM_BLOCK_GAS_LIMIT as _);
+    assert_eq!(block.header.gas_limit, ETHEREUM_BLOCK_GAS_LIMIT);
     assert!(block.header.gas_used <= block.header.gas_limit);
     assert!(
         block.transactions.hashes().len() < 10_000,

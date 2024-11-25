@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-use reth_primitives::{Address, TxKind};
+use alloy_primitives::{Address, TxKind};
 use revm::primitives::{BlockEnv, CfgEnvWithHandlerCfg, ExecutionResult, Output, SpecId, U256};
 use revm::{Database, DatabaseCommit};
 use sov_modules_api::WorkingSet;

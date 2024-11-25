@@ -2,9 +2,10 @@ use std::collections::HashMap;
 use std::str::FromStr;
 
 use alloy_primitives::LogData;
+use alloy_primitives::{address, b256, hex, TxKind, U64};
+use alloy_rpc_types::{TransactionInput, TransactionRequest};
 use reth_primitives::constants::ETHEREUM_BLOCK_GAS_LIMIT;
-use reth_primitives::{address, b256, hex, BlockNumberOrTag, Log, TxKind, U64};
-use reth_rpc_types::{TransactionInput, TransactionRequest};
+use reth_primitives::{BlockNumberOrTag, Log};
 use revm::primitives::{Bytes, KECCAK_EMPTY, U256};
 use sov_modules_api::default_context::DefaultContext;
 use sov_modules_api::hooks::HookSoftConfirmationInfo;
@@ -399,7 +400,7 @@ fn test_sys_tx_gas_usage_effect_on_block_gas_limit() {
         .unwrap()
         .unwrap();
 
-    assert_eq!(block.header.gas_limit, ETHEREUM_BLOCK_GAS_LIMIT as _);
+    assert_eq!(block.header.gas_limit, ETHEREUM_BLOCK_GAS_LIMIT);
     assert!(block.header.gas_used <= block.header.gas_limit);
 
     // In total there should only be 1134 transactions 1 is system tx others are contract calls
@@ -605,7 +606,7 @@ fn test_upgrade_light_client() {
     // Assert if hash is equal to 0xdeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddead
     assert_eq!(
         hash,
-        reth_primitives::Bytes::from_str(
+        alloy_primitives::Bytes::from_str(
             "0xdeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddead"
         )
         .unwrap()
@@ -804,7 +805,7 @@ fn test_change_upgrade_owner() {
     // Assert if hash is equal to 0xdeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddead
     assert_eq!(
         hash,
-        reth_primitives::Bytes::from_str(
+        alloy_primitives::Bytes::from_str(
             "0xdeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddeaddead"
         )
         .unwrap()

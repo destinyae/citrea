@@ -1,11 +1,9 @@
+use alloy_primitives::hex_literal::hex;
 use alloy_primitives::Sealable;
+use alloy_primitives::{Address, Bloom, Bytes, B256, B64, U256, U64};
 use lazy_static::lazy_static;
 use rand::Rng;
-use reth_primitives::hex_literal::hex;
-use reth_primitives::{
-    Address, Bloom, Bytes, Header, Signature, TransactionSigned, B256, EMPTY_OMMER_ROOT_HASH,
-    KECCAK_EMPTY, U256,
-};
+use reth_primitives::{Header, Signature, TransactionSigned, EMPTY_OMMER_ROOT_HASH, KECCAK_EMPTY};
 use revm::primitives::BlockEnv;
 use sov_modules_api::hooks::HookSoftConfirmationInfo;
 use sov_modules_api::{StateMapAccessor, StateValueAccessor, StateVecAccessor};
@@ -122,7 +120,7 @@ fn end_soft_confirmation_hook_sets_head() {
                 gas_used: 200u64,
                 timestamp: 54,
                 mix_hash: *DA_ROOT_HASH,
-                nonce: 0,
+                nonce: B64::ZERO,
                 base_fee_per_gas: Some(767816299),
                 extra_data: Bytes::default(),
                 blob_gas_used: None,
@@ -216,16 +214,16 @@ fn create_pending_transaction(hash: B256, index: u64) -> PendingTransaction {
             signer: Address::from([1u8; 20]),
             signed_transaction: TransactionSigned {
                 hash,
-                signature: Signature::default(),
-                transaction: reth_primitives::Transaction::Eip1559(reth_primitives::TxEip1559 {
+                signature: Signature::new(U256::ZERO, U256::ZERO, false.into()),
+                transaction: reth_primitives::Transaction::Eip1559(alloy_consensus::TxEip1559 {
                     chain_id: DEFAULT_CHAIN_ID,
                     nonce: 1u64,
                     gas_limit: 1000u64,
                     max_fee_per_gas: 2000u64 as u128,
                     max_priority_fee_per_gas: 3000u64 as u128,
-                    to: reth_primitives::TxKind::Call(Address::from([3u8; 20])),
+                    to: alloy_primitives::TxKind::Call(Address::from([3u8; 20])),
                     value: U256::from(4000u128),
-                    access_list: reth_primitives::AccessList::default(),
+                    access_list: alloy_rpc_types::AccessList::default(),
                     input: Bytes::from([4u8; 20]),
                 }),
             },
@@ -332,7 +330,7 @@ fn finalize_hook_creates_final_block() {
         mix_hash: B256::from(hex!(
             "0505050505050505050505050505050505050505050505050505050505050505"
         )),
-        nonce: 0,
+        nonce: B64::ZERO,
         base_fee_per_gas: Some(767816299),
         extra_data: Bytes::default(),
         blob_gas_used: None,
@@ -340,12 +338,12 @@ fn finalize_hook_creates_final_block() {
         parent_beacon_block_root: None,
         requests_root: None,
     };
-    let sealed = self.header.seal_slow();
+    let sealed = header.seal_slow();
     let (header, seal) = sealed.into_parts();
     assert_eq!(
         block,
         SealedBlock {
-            header: SealedHeader::new(header, seal),
+            header: reth_primitives::SealedHeader::new(header, seal),
             l1_fee_rate: 0,
             l1_hash: B256::from(DA_ROOT_HASH.0),
             transactions: 3..6

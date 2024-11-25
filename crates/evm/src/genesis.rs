@@ -260,7 +260,7 @@ mod tests {
     use std::collections::HashMap;
     use std::str::FromStr;
 
-    use reth_primitives::{hex, keccak256, Address, Bytes};
+    use alloy_primitives::{hex, keccak256, Address, Bytes};
 
     use super::U256;
     use crate::{AccountData, EvmConfig};
