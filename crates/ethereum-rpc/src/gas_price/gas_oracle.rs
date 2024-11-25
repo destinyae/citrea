@@ -3,12 +3,14 @@
 
 // Adopted from: https://github.com/paradigmxyz/reth/blob/main/crates/rpc/rpc/src/eth/gas_oracle.rs
 
+use alloy_network::AnyNetwork;
 use alloy_primitives::{B256, U256};
 use alloy_rpc_types::{BlockTransactions, FeeHistory};
 use citrea_evm::{Evm, SYSTEM_SIGNER};
 use citrea_primitives::basefee::calculate_next_block_base_fee;
 use parking_lot::Mutex;
 use reth_primitives::BlockNumberOrTag;
+use reth_rpc_eth_api::RpcTransaction;
 use reth_rpc_eth_types::error::{EthApiError, EthResult, RpcInvalidTransactionError};
 use serde::{Deserialize, Serialize};
 use sov_modules_api::WorkingSet;
@@ -427,7 +429,7 @@ impl Default for GasPriceOracleResult {
 
 // Adopted from: https://github.com/paradigmxyz/reth/blob/main/crates/primitives/src/transaction/mod.rs#L297
 pub(crate) fn effective_gas_tip(
-    transaction: &reth_rpc_types::Transaction,
+    transaction: &RpcTransaction<AnyNetwork>,
     base_fee: Option<u128>,
 ) -> Option<u128> {
     let priority_fee_or_price = match transaction.transaction_type {
