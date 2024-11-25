@@ -37,6 +37,7 @@ tower-http = { workspace = true }
 tracing = { workspace = true }
 tracing-subscriber = { workspace = true }
 
+alloy-eips = { workspace = true }
 alloy-genesis = { workspace = true }
 alloy-network = { workspace = true }
 alloy-primitives = { workspace = true }

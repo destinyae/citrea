@@ -1,4 +1,5 @@
 use alloy_consensus::{TxEip1559 as RethTxEip1559, TxEip4844 as RethTxEip4844};
+use alloy_eips::eip2718::Encodable2718;
 use alloy_primitives::{Address, Bytes as RethBytes, TxKind, B256, U256};
 use alloy_rlp::Encodable;
 use rand::rngs::StdRng;
@@ -74,7 +75,7 @@ impl TestSigner {
         let reth_tx = RethTransaction::Eip1559(reth_tx);
         let signed = self.signer.sign_transaction(reth_tx, self.address)?;
         let mut buf = vec![];
-        signed.encode(&mut buf);
+        signed.encode_2718(&mut buf);
         Ok(RlpEvmTransaction { rlp: buf })
     }
 
@@ -103,7 +104,7 @@ impl TestSigner {
         let reth_tx = RethTransaction::Eip1559(reth_tx);
         let signed = self.signer.sign_transaction(reth_tx, self.address)?;
         let mut buf = vec![];
-        signed.encode(&mut buf);
+        signed.encode_2718(&mut buf);
         Ok(RlpEvmTransaction { rlp: buf })
     }
 
@@ -127,7 +128,7 @@ impl TestSigner {
         let reth_tx = RethTransaction::Eip4844(reth_tx);
         let signed = self.signer.sign_transaction(reth_tx, self.address)?;
         let mut buf = vec![];
-        signed.encode(&mut buf);
+        signed.encode_2718(&mut buf);
         Ok(RlpEvmTransaction { rlp: buf })
     }
 }

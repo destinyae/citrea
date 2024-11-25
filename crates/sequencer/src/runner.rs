@@ -4,6 +4,7 @@ use std::sync::Arc;
 use std::time::Duration;
 use std::vec;
 
+use alloy_eips::eip2718::Encodable2718;
 use alloy_primitives::{Address, Bytes, TxHash};
 use alloy_rlp::Encodable;
 use anyhow::{anyhow, bail};
@@ -283,7 +284,7 @@ where
                                 evm_tx
                                     .to_recovered_transaction()
                                     .into_signed()
-                                    .encode(&mut buf);
+                                    .encode_2718(&mut buf);
                                 let rlp_tx = RlpEvmTransaction { rlp: buf };
 
                                 let call_txs = CallMessage {

@@ -1,5 +1,6 @@
 use std::sync::Arc;
 
+use alloy_eips::eip2718::Encodable2718;
 use alloy_network::AnyNetwork;
 use alloy_primitives::{Bytes, B256};
 use alloy_rlp::Encodable;
@@ -92,7 +93,7 @@ impl<C: sov_modules_api::Context, DB: SequencerLedgerOps + Send + Sync + 'static
             .transaction()
             .clone()
             .into_signed()
-            .encode(&mut rlp_encoded_tx);
+            .encode_2718(&mut rlp_encoded_tx);
 
         // Do not return error here just log
         if let Err(e) = self
