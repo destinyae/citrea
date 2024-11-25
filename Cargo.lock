@@ -2832,6 +2832,7 @@ dependencies = [
 name = "ethereum-rpc"
 version = "0.5.0-rc.1"
 dependencies = [
+ "alloy-network",
  "alloy-primitives",
  "alloy-rpc-types",
  "alloy-rpc-types-trace",
@@ -2844,6 +2845,7 @@ dependencies = [
  "parking_lot",
  "proptest",
  "reth-primitives",
+ "reth-rpc-eth-api",
  "reth-rpc-eth-types",
  "reth-rpc-types-compat",
  "rustc_version_runtime",

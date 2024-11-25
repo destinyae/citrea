@@ -4,12 +4,12 @@
 // Adopted from: https://github.com/paradigmxyz/reth/blob/main/crates/rpc/rpc/src/eth/gas_oracle.rs
 
 use alloy_primitives::{B256, U256};
+use alloy_rpc_types::{BlockTransactions, FeeHistory};
 use citrea_evm::{Evm, SYSTEM_SIGNER};
 use citrea_primitives::basefee::calculate_next_block_base_fee;
 use parking_lot::Mutex;
 use reth_primitives::BlockNumberOrTag;
 use reth_rpc_eth_types::error::{EthApiError, EthResult, RpcInvalidTransactionError};
-use reth_rpc_types::{BlockTransactions, FeeHistory};
 use serde::{Deserialize, Serialize};
 use sov_modules_api::WorkingSet;
 use tracing::warn;
@@ -247,7 +247,7 @@ impl<C: sov_modules_api::Context> GasPriceOracle<C> {
         let mut last_price = self.last_price.lock();
 
         // if we have stored a last price, then we check whether or not it was for the same head
-        if last_price.block_hash == header.hash.unwrap() {
+        if last_price.block_hash == header.hash {
             return Ok(last_price.price);
         }
 
@@ -256,11 +256,11 @@ impl<C: sov_modules_api::Context> GasPriceOracle<C> {
         //
         // we only return more than check_block blocks' worth of prices if one or more return empty
         // transactions
-        let mut current_hash = header.hash.unwrap();
+        let mut current_hash = header.hash;
         let mut results = Vec::new();
         let mut populated_blocks = 0;
 
-        let header_number = header.number.unwrap();
+        let header_number = header.number;
 
         // we only check a maximum of 2 * max_block_history, or the number of blocks in the chain
         let max_blocks = if self.oracle_config.max_block_history * 2 > header_number {
@@ -272,7 +272,7 @@ impl<C: sov_modules_api::Context> GasPriceOracle<C> {
         for _ in 0..max_blocks {
             let (parent_hash, block_values) = self
                 .get_block_values(current_hash, SAMPLE_NUMBER as usize, working_set)?
-                .ok_or(EthApiError::UnknownBlockNumber)?;
+                .ok_or(EthApiError::HeaderNotFound(current_hash.into()))?;
 
             if block_values.is_empty() {
                 results.push(last_price.price);
@@ -306,7 +306,7 @@ impl<C: sov_modules_api::Context> GasPriceOracle<C> {
         }
 
         *last_price = GasPriceOracleResult {
-            block_hash: header.hash.unwrap(),
+            block_hash: header.hash,
             price,
         };
 
@@ -349,7 +349,10 @@ impl<C: sov_modules_api::Context> GasPriceOracle<C> {
             .iter()
             .filter(|tx| {
                 if let Some(ignore_under) = self.oracle_config.ignore_price {
-                    let effective_gas_tip = effective_gas_tip(tx, block.header.base_fee_per_gas);
+                    let effective_gas_tip = effective_gas_tip(
+                        tx,
+                        block.header.base_fee_per_gas.map(|basefee| basefee as u128),
+                    );
                     if effective_gas_tip < Some(ignore_under) {
                         return false;
                     }
@@ -361,7 +364,12 @@ impl<C: sov_modules_api::Context> GasPriceOracle<C> {
             })
             // map all values to effective_gas_tip because we will be returning those values
             // anyways
-            .map(|tx| effective_gas_tip(tx, block.header.base_fee_per_gas))
+            .map(|tx| {
+                effective_gas_tip(
+                    tx,
+                    block.header.base_fee_per_gas.map(|basefee| basefee as u128),
+                )
+            })
             .collect::<Vec<_>>();
 
         // now do the sort
@@ -457,11 +465,11 @@ pub(crate) fn effective_gas_tip(
 }
 
 #[allow(dead_code)]
-pub(crate) fn convert_u64_to_u256(u64: u64) -> reth_primitives::U256 {
+pub(crate) fn convert_u64_to_u256(u64: u64) -> U256 {
     let bytes: [u8; 8] = u64.to_be_bytes();
     let mut new_bytes = [0u8; 32];
     new_bytes[24..].copy_from_slice(&bytes);
-    reth_primitives::U256::from_be_bytes(new_bytes)
+    U256::from_be_bytes(new_bytes)
 }
 
 #[cfg(test)]

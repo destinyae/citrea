@@ -1,9 +1,10 @@
 use std::sync::Arc;
 
+use alloy_rpc_types::AnyNetworkBlock;
 use citrea_evm::{log_matches_filter, Evm, Filter, LogResponse};
 use futures::future;
 use jsonrpsee::{SubscriptionMessage, SubscriptionSink};
-use reth_rpc_types::{BlockNumberOrTag, RichBlock};
+use reth_primitives::BlockNumberOrTag;
 use sov_modules_api::WorkingSet;
 use tokio::sync::{broadcast, mpsc, RwLock};
 use tokio::task::JoinHandle;

@@ -404,7 +404,7 @@ fn register_rpc_methods<C: sov_modules_api::Context, Da: DaService>(
                 match evm.get_block_number_by_block_hash(block_hash, &mut working_set) {
                     Some(block_number) => block_number,
                     None => {
-                        return Err(EthApiError::UnknownBlockNumber.into());
+                        return Err(EthApiError::HeaderNotFound(block_hash.into()).into());
                     }
                 };
 
