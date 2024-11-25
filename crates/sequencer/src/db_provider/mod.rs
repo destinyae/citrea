@@ -4,7 +4,7 @@ use alloy_primitives::{
     map::{HashMap, HashSet},
     Address, BlockHash, BlockNumber, Bytes, StorageKey, StorageValue, TxHash, TxNumber, B256, U256,
 };
-use alloy_rpc_types::{AnyNetworkBlock, Block, BlockTransactions};
+use alloy_rpc_types::{AnyNetworkBlock, BlockTransactions};
 use citrea_evm::{Evm, EvmChainConfig};
 use jsonrpsee::core::RpcResult;
 use reth_chainspec::{ChainInfo, ChainSpec};
@@ -19,8 +19,7 @@ use reth_provider::{
     RequestsProvider, StateProofProvider, StateProvider, StateProviderFactory, StateRootProvider,
     StorageRootProvider, TransactionsProvider, WithdrawalsProvider,
 };
-use reth_trie::{updates::TrieUpdates, HashedPostState, HashedStorage, StorageProof, TrieInput};
-use revm::db::states::bundle_state::BundleState;
+use reth_trie::{updates::TrieUpdates, HashedPostState, HashedStorage, StorageProof};
 use sov_modules_api::WorkingSet;
 
 #[derive(Clone)]
@@ -542,12 +541,12 @@ impl<C: sov_modules_api::Context> StateRootProvider for DbProvider<C> {
     ) -> ProviderResult<(B256, TrieUpdates)> {
         unimplemented!("state_root_with_updates")
     }
-    fn state_root_from_nodes(&self, input: reth_trie::TrieInput) -> ProviderResult<B256> {
+    fn state_root_from_nodes(&self, _input: reth_trie::TrieInput) -> ProviderResult<B256> {
         unimplemented!("state_root_from_nodes")
     }
     fn state_root_from_nodes_with_updates(
         &self,
-        input: reth_trie::TrieInput,
+        _input: reth_trie::TrieInput,
     ) -> ProviderResult<(B256, TrieUpdates)> {
         unimplemented!("state_root_from_nodes_with_updates")
     }
@@ -556,17 +555,17 @@ impl<C: sov_modules_api::Context> StateRootProvider for DbProvider<C> {
 impl<C: sov_modules_api::Context> StateProofProvider for DbProvider<C> {
     fn multiproof(
         &self,
-        input: reth_trie::TrieInput,
-        targets: HashMap<B256, HashSet<B256>>,
+        _input: reth_trie::TrieInput,
+        _targets: HashMap<B256, HashSet<B256>>,
     ) -> ProviderResult<reth_trie::MultiProof> {
         unimplemented!("multiproof")
     }
 
     fn proof(
         &self,
-        input: reth_trie::TrieInput,
-        address: Address,
-        slots: &[B256],
+        _input: reth_trie::TrieInput,
+        _address: Address,
+        _slots: &[B256],
     ) -> ProviderResult<reth_trie::AccountProof> {
         unimplemented!("proof")
     }
@@ -585,8 +584,8 @@ impl<C: sov_modules_api::Context> StorageRootProvider for DbProvider<C> {
     #[doc = " state."]
     fn storage_root(
         &self,
-        address: Address,
-        hashed_storage: HashedStorage,
+        _address: Address,
+        _hashed_storage: HashedStorage,
     ) -> ProviderResult<B256> {
         unimplemented!("storage_root")
     }
@@ -595,9 +594,9 @@ impl<C: sov_modules_api::Context> StorageRootProvider for DbProvider<C> {
     #[doc = " state."]
     fn storage_proof(
         &self,
-        address: Address,
-        slot: B256,
-        hashed_storage: HashedStorage,
+        _address: Address,
+        _slot: B256,
+        _hashed_storage: HashedStorage,
     ) -> ProviderResult<StorageProof> {
         unimplemented!("storage_proof")
     }
