@@ -77,7 +77,7 @@ impl Drop for SubscriptionManager {
 }
 
 pub async fn new_heads_notifier(
-    mut rx: mpsc::Receiver<RichBlock>,
+    mut rx: mpsc::Receiver<AnyNetworkBlock>,
     head_subscriptions: Arc<RwLock<Vec<SubscriptionSink>>>,
 ) {
     while let Some(block) = rx.recv().await {
@@ -134,7 +134,7 @@ pub async fn logs_notifier(
 pub async fn soft_confirmation_event_handler<C: sov_modules_api::Context>(
     storage: C::Storage,
     mut soft_confirmation_rx: broadcast::Receiver<u64>,
-    new_heads_tx: mpsc::Sender<RichBlock>,
+    new_heads_tx: mpsc::Sender<AnyNetworkBlock>,
     logs_tx: mpsc::Sender<Vec<LogResponse>>,
 ) {
     let evm = Evm::<C>::default();
