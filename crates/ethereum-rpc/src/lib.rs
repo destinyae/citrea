@@ -5,7 +5,10 @@ mod trace;
 
 use std::sync::Arc;
 
+use alloy_network::AnyNetwork;
 use alloy_primitives::{keccak256, Bytes, B256, U256};
+use alloy_rpc_types::{FeeHistory, Index};
+use alloy_rpc_types_trace::geth::{GethDebugTracingOptions, GethTrace};
 #[cfg(feature = "local")]
 pub use citrea_evm::DevSigner;
 use citrea_evm::{Evm, Filter};
@@ -15,9 +18,8 @@ pub use gas_price::gas_oracle::GasPriceOracleConfig;
 use jsonrpsee::types::ErrorObjectOwned;
 use jsonrpsee::RpcModule;
 use reth_primitives::BlockNumberOrTag;
+use reth_rpc_eth_api::RpcTransaction;
 use reth_rpc_eth_types::EthApiError;
-use reth_rpc_types::trace::geth::{GethDebugTracingOptions, GethTrace};
-use reth_rpc_types::{FeeHistory, Index};
 use sequencer_client::SequencerClient;
 use serde_json::json;
 use sov_db::ledger_db::{LedgerDB, SharedLedgerOps};
@@ -527,7 +529,7 @@ fn register_rpc_methods<C: sov_modules_api::Context, Da: DaService>(
             },
         )?;
 
-        rpc.register_async_method::<Result<Option<reth_rpc_types::Transaction>, ErrorObjectOwned>, _, _>(
+        rpc.register_async_method::<Result<Option<RpcTransaction<AnyNetwork>>, ErrorObjectOwned>, _, _>(
             "eth_getTransactionByHash",
             |parameters, ethereum, _| async move {
                 let mut params = parameters.sequence();
@@ -569,7 +571,9 @@ fn register_rpc_methods<C: sov_modules_api::Context, Da: DaService>(
                                 {
                                     Ok(tx) => Ok(tx),
                                     Err(e) => match e {
-                                        jsonrpsee::core::client::Error::Call(e_owned) => Err(e_owned),
+                                        jsonrpsee::core::client::Error::Call(e_owned) => {
+                                            Err(e_owned)
+                                        }
                                         _ => Err(to_jsonrpsee_error_object(
                                             "SEQUENCER_CLIENT_ERROR",
                                             e,
