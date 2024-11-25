@@ -2061,6 +2061,7 @@ name = "citrea-sequencer"
 version = "0.5.0-rc.1"
 dependencies = [
  "alloy-genesis",
+ "alloy-network",
  "alloy-primitives",
  "alloy-rlp",
  "alloy-rpc-types",
@@ -2086,6 +2087,8 @@ dependencies = [
  "reth-execution-types",
  "reth-primitives",
  "reth-provider",
+ "reth-rpc",
+ "reth-rpc-eth-api",
  "reth-rpc-eth-types",
  "reth-rpc-types-compat",
  "reth-tasks",
