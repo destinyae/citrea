@@ -1,3 +1,4 @@
+#![allow(missing_docs)]
 use alloy_primitives::{address, Address, Bytes, U256};
 use alloy_sol_types::{sol, SolCall};
 
@@ -63,8 +64,8 @@ impl BitcoinLightClient {
 
 // Bridge wrapper.
 sol! {
-    #[sol(abi)]
     #[allow(missing_docs)]
+    #[sol(abi)]
     BridgeContract,
     "./src/evm/system_contracts/out/Bridge.sol/Bridge.json"
 }

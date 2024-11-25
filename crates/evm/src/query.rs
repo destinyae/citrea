@@ -4,7 +4,7 @@ use std::ops::{Range, RangeInclusive};
 use alloy_consensus::Eip658Value;
 use alloy_rpc_types_eth::transaction::TransactionRequest;
 use alloy_eips::eip2930::AccessListWithGasUsed;
-use alloy_network::{AnyNetwork, AnyTxType};
+use alloy_network::AnyNetwork;
 use alloy_primitives::TxKind::{Call, Create};
 use alloy_primitives::{Address, Bytes, Uint, B256, U256, U64};
 use alloy_rlp::Encodable;
@@ -24,12 +24,11 @@ use reth_primitives::{
 };
 use reth_provider::ProviderError;
 use reth_rpc::eth::EthTxBuilder;
-use reth_rpc_eth_api::types::{RpcBlock, RpcTransaction};
-use reth_rpc_eth_api::RpcReceipt;
+use reth_rpc_eth_api::types::RpcTransaction;
 use reth_rpc_eth_types::error::{
     ensure_success, EthApiError, EthResult, RevertError, RpcInvalidTransactionError,
 };
-use reth_rpc_types_compat::block::{from_block, from_primitive_with_hash};
+use reth_rpc_types_compat::block::from_primitive_with_hash;
 use revm::primitives::{
     BlobExcessGasAndPrice, BlockEnv, CfgEnvWithHandlerCfg, EVMError, ExecutionResult, HaltReason,
     InvalidTransaction, SpecId, TransactTo,
