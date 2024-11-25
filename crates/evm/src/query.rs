@@ -2,8 +2,9 @@ use std::collections::BTreeMap;
 use std::ops::{Range, RangeInclusive};
 
 use alloy_consensus::Eip658Value;
+use alloy_rpc_types_eth::transaction::TransactionRequest;
 use alloy_eips::eip2930::AccessListWithGasUsed;
-use alloy_network::AnyNetwork;
+use alloy_network::{AnyNetwork, AnyTxType};
 use alloy_primitives::TxKind::{Call, Create};
 use alloy_primitives::{Address, Bytes, Uint, B256, U256, U64};
 use alloy_rlp::Encodable;
@@ -23,7 +24,8 @@ use reth_primitives::{
 };
 use reth_provider::ProviderError;
 use reth_rpc::eth::EthTxBuilder;
-use reth_rpc_eth_api::types::RpcBlock;
+use reth_rpc_eth_api::types::{RpcBlock, RpcTransaction};
+use reth_rpc_eth_api::RpcReceipt;
 use reth_rpc_eth_types::error::{
     ensure_success, EthApiError, EthResult, RevertError, RpcInvalidTransactionError,
 };
@@ -408,7 +410,7 @@ impl<C: sov_modules_api::Context> Evm<C> {
         block_hash: B256,
         index: U64,
         working_set: &mut WorkingSet<C>,
-    ) -> RpcResult<Option<reth_rpc_types::Transaction>> {
+    ) -> RpcResult<Option<RpcTransaction<AnyNetwork>>> {
         let mut accessory_state = working_set.accessory_state();
 
         let block_number = match self.block_hashes.get(&block_hash, &mut accessory_state) {
@@ -460,7 +462,7 @@ impl<C: sov_modules_api::Context> Evm<C> {
         block_number: BlockNumberOrTag,
         index: U64,
         working_set: &mut WorkingSet<C>,
-    ) -> RpcResult<Option<reth_rpc_types::Transaction>> {
+    ) -> RpcResult<Option<RpcTransaction<AnyNetwork>>> {
         let block_number = match self.block_number_for_id(&block_number, working_set) {
             Ok(block_number) => block_number,
             Err(EthApiError::HeaderNotFound(_)) => return Ok(None),
@@ -542,7 +544,7 @@ impl<C: sov_modules_api::Context> Evm<C> {
     #[rpc_method(name = "eth_call", blocking)]
     pub fn get_call(
         &self,
-        request: reth_rpc_types::TransactionRequest,
+        request: TransactionRequest,
         block_id: Option<BlockId>,
         state_overrides: Option<StateOverride>,
         block_overrides: Option<BlockOverrides>,
@@ -641,7 +643,7 @@ impl<C: sov_modules_api::Context> Evm<C> {
     #[rpc_method(name = "eth_createAccessList", blocking)]
     pub fn create_access_list(
         &self,
-        request: reth_rpc_types::TransactionRequest,
+        request: TransactionRequest,
         block_number: Option<BlockNumberOrTag>,
         working_set: &mut WorkingSet<C>,
     ) -> RpcResult<AccessListWithGasUsed> {
@@ -759,7 +761,7 @@ impl<C: sov_modules_api::Context> Evm<C> {
     // The point of this function is to prepare env and call estimate_gas_with_env.
     fn estimate_tx_expenses(
         &self,
-        request: reth_rpc_types::TransactionRequest,
+        request: TransactionRequest,
         block_number: Option<BlockNumberOrTag>,
         working_set: &mut WorkingSet<C>,
     ) -> RpcResult<EstimatedTxExpenses> {
@@ -805,7 +807,7 @@ impl<C: sov_modules_api::Context> Evm<C> {
     #[rpc_method(name = "eth_estimateGas", blocking)]
     pub fn eth_estimate_gas(
         &self,
-        request: reth_rpc_types::TransactionRequest,
+        request: TransactionRequest,
         block_number: Option<BlockNumberOrTag>,
         working_set: &mut WorkingSet<C>,
     ) -> RpcResult<U256> {
@@ -827,7 +829,7 @@ impl<C: sov_modules_api::Context> Evm<C> {
     #[rpc_method(name = "eth_estimateDiffSize", blocking)]
     pub fn eth_estimate_diff_size(
         &self,
-        request: reth_rpc_types::TransactionRequest,
+        request: TransactionRequest,
         block_number: Option<BlockNumberOrTag>,
         working_set: &mut WorkingSet<C>,
     ) -> RpcResult<EstimatedDiffSize> {
@@ -873,7 +875,7 @@ impl<C: sov_modules_api::Context> Evm<C> {
     /// Inner gas estimator
     pub(crate) fn estimate_gas_with_env(
         &self,
-        mut request: reth_rpc_types::TransactionRequest,
+        mut request: TransactionRequest,
         l1_fee_rate: u128,
         block_env: BlockEnv,
         mut cfg_env: CfgEnvWithHandlerCfg,
@@ -1154,7 +1156,7 @@ impl<C: sov_modules_api::Context> Evm<C> {
         &self,
         hash: B256,
         working_set: &mut WorkingSet<C>,
-    ) -> RpcResult<Option<reth_rpc_types::Transaction>> {
+    ) -> RpcResult<Option<RpcTransaction<AnyNetwork>>> {
         let mut accessory_state = working_set.accessory_state();
 
         let tx_number = self.transaction_hashes.get(&hash, &mut accessory_state);
@@ -1187,7 +1189,7 @@ impl<C: sov_modules_api::Context> Evm<C> {
                         EthTxBuilder,
                     >(tx.into(), tx_info);
 
-            Ok(Some(transaction))
+            transaction
         });
 
         Ok(transaction)
@@ -1659,7 +1661,7 @@ pub(crate) fn build_rpc_receipt(
         logs.push(rpclog);
     }
 
-    let rpc_receipt = reth_rpc_types::Receipt {
+    let rpc_receipt = alloy_rpc_types::Receipt {
         status: Eip658Value::Eip658(receipt.receipt.success),
         cumulative_gas_used: receipt.receipt.cumulative_gas_used as u128,
         logs,
