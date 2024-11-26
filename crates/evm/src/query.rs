@@ -1188,7 +1188,7 @@ impl<C: sov_modules_api::Context> Evm<C> {
                         index: Some(number - block.transactions.start),
                     };
 
-                    
+
 
             reth_rpc_types_compat::transaction::from_recovered_with_block_context::<
                         EthTxBuilder,
