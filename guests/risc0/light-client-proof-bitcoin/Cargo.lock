@@ -1854,6 +1854,7 @@ dependencies = [
  "bech32 0.9.1",
  "borsh",
  "derive_more 0.99.18",
+ "digest",
  "ed25519-dalek",
  "hex",
  "jmt",

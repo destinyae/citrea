@@ -12,6 +12,7 @@ use alloy_primitives::{Address, Bytes, TxHash, TxKind, B256, U256, U64};
 // use reth_rpc_types::TransactionReceipt;
 use alloy_rpc_types::AnyNetworkBlock;
 use alloy_rpc_types_trace::geth::{GethDebugTracingOptions, GethTrace};
+use citrea_batch_prover::GroupCommitments;
 use citrea_evm::{Filter, LogResponse};
 use ethereum_rpc::SyncStatus;
 use jsonrpsee::core::client::{ClientT, SubscriptionClientT};
@@ -734,7 +735,11 @@ impl TestClient {
             .unwrap()
     }
 
-    pub(crate) async fn batch_prover_prove(&self, l1_height: u64, group_commitments: Option<bool>) {
+    pub(crate) async fn batch_prover_prove(
+        &self,
+        l1_height: u64,
+        group_commitments: Option<GroupCommitments>,
+    ) {
         self.http_client
             .request(
                 "batchProver_prove",
