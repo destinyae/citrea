@@ -3,12 +3,13 @@ use std::str::FromStr;
 
 use alloy::signers::local::PrivateKeySigner;
 use alloy::signers::Signer;
-use citrea_common::SequencerConfig;
 // use citrea::initialize_logging;
+use alloy_primitives::{Address, Bytes, U256};
+use citrea_common::SequencerConfig;
 use citrea_evm::smart_contracts::{LogsContract, SimpleStorageContract, TestContract};
 use citrea_evm::system_contracts::BitcoinLightClient;
 use citrea_stf::genesis_config::GenesisPaths;
-use reth_primitives::{Address, BlockId, BlockNumberOrTag, Bytes, U256};
+use reth_primitives::{BlockId, BlockNumberOrTag};
 use sov_rollup_interface::CITREA_VERSION;
 
 // use sov_demo_rollup::initialize_logging;

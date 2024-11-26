@@ -11,10 +11,11 @@ use std::path::{Path, PathBuf};
 use std::str::FromStr;
 use std::time::Duration;
 
+use alloy_primitives::{Address, U256};
 use citrea_common::{BatchProverConfig, SequencerConfig};
 use citrea_evm::smart_contracts::SimpleStorageContract;
 use citrea_stf::genesis_config::GenesisPaths;
-use reth_primitives::{Address, BlockNumberOrTag, U256};
+use reth_primitives::BlockNumberOrTag;
 use sov_mock_da::{MockAddress, MockDaService};
 use sov_rollup_interface::rpc::{LastVerifiedBatchProofResponse, SoftConfirmationStatus};
 use sov_rollup_interface::services::da::DaService;

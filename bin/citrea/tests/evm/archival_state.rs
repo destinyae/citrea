@@ -1,10 +1,11 @@
 use std::str::FromStr;
 use std::time::Duration;
 
+use alloy_primitives::{Address, Bytes, B256, U256};
 use citrea_common::SequencerConfig;
 use citrea_evm::smart_contracts::SimpleStorageContract;
 use citrea_stf::genesis_config::GenesisPaths;
-use reth_primitives::{Address, BlockId, BlockNumberOrTag, Bytes, B256, U256};
+use reth_primitives::{BlockId, BlockNumberOrTag};
 use tokio::time::sleep;
 
 use crate::evm::init_test_rollup;

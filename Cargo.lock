@@ -1760,6 +1760,8 @@ dependencies = [
  "alloy",
  "alloy-primitives",
  "alloy-rlp",
+ "alloy-rpc-types",
+ "alloy-rpc-types-trace",
  "alloy-sol-types",
  "anyhow",
  "async-trait",

@@ -1,9 +1,10 @@
 /// Tests that check the full node's ability to send a transaction to the sequencer.
 use std::str::FromStr;
 
+use alloy_primitives::{Address, TxHash};
 use citrea_common::SequencerConfig;
 use citrea_stf::genesis_config::GenesisPaths;
-use reth_primitives::{Address, BlockNumberOrTag, TxHash};
+use reth_primitives::BlockNumberOrTag;
 
 use crate::e2e::{initialize_test, TestConfig};
 use crate::evm::init_test_rollup;

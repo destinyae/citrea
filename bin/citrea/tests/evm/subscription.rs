@@ -3,13 +3,13 @@ use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
 use alloy_primitives::FixedBytes;
+// use citrea::initialize_logging;
+use alloy_primitives::{keccak256, Address};
 use alloy_sol_types::SolEvent;
 use citrea_common::SequencerConfig;
 use citrea_evm::smart_contracts::{AnotherLogEvent, LogEvent, LogsContract, TestContract};
 use citrea_evm::{Filter, LogResponse};
-// use citrea::initialize_logging;
 use citrea_stf::genesis_config::GenesisPaths;
-use reth_primitives::{keccak256, Address};
 use tokio::time::sleep;
 
 use crate::evm::make_test_client;

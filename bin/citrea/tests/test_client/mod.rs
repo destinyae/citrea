@@ -8,16 +8,17 @@ use alloy::providers::{PendingTransactionBuilder, Provider as AlloyProvider, Pro
 use alloy::rpc::types::eth::{Block, Transaction, TransactionReceipt, TransactionRequest};
 use alloy::signers::local::PrivateKeySigner;
 use alloy::transports::http::{Http, HyperClient};
+use alloy_primitives::{Address, Bytes, TxHash, TxKind, B256, U256, U64};
+// use reth_rpc_types::TransactionReceipt;
+use alloy_rpc_types::AnyNetworkBlock;
+use alloy_rpc_types_trace::geth::{GethDebugTracingOptions, GethTrace};
 use citrea_evm::{Filter, LogResponse};
 use ethereum_rpc::SyncStatus;
 use jsonrpsee::core::client::{ClientT, SubscriptionClientT};
 use jsonrpsee::http_client::{HttpClient, HttpClientBuilder};
 use jsonrpsee::rpc_params;
 use jsonrpsee::ws_client::{PingConfig, WsClient, WsClientBuilder};
-use reth_primitives::{Address, BlockId, BlockNumberOrTag, Bytes, TxHash, TxKind, B256, U256, U64};
-// use reth_rpc_types::TransactionReceipt;
-use reth_rpc_types::trace::geth::{GethDebugTracingOptions, GethTrace};
-use reth_rpc_types::RichBlock;
+use reth_primitives::{BlockId, BlockNumberOrTag};
 use sequencer_client::GetSoftConfirmationResponse;
 use sov_rollup_interface::rpc::{
     BatchProofResponse, LastVerifiedBatchProofResponse, SequencerCommitmentResponse,
@@ -672,7 +673,7 @@ impl TestClient {
         traces.into_iter().flatten().collect()
     }
 
-    pub(crate) async fn subscribe_new_heads(&self) -> mpsc::Receiver<RichBlock> {
+    pub(crate) async fn subscribe_new_heads(&self) -> mpsc::Receiver<AnyNetworkBlock> {
         let (tx, rx) = mpsc::channel();
         let mut subscription = self
             .ws_client

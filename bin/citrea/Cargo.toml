@@ -70,6 +70,8 @@ sov-rollup-interface = { path = "../../crates/sovereign-sdk/rollup-interface", f
 
 alloy = { workspace = true, features = ["hyper", "consensus", "rpc-types-eth", "provider-http", "signers", "signer-local"] }
 alloy-rlp = { workspace = true }
+alloy-rpc-types = { workspace = true }
+alloy-rpc-types-trace = { workspace = true }
 bincode = { workspace = true }
 borsh = { workspace = true }
 hex = { workspace = true }
