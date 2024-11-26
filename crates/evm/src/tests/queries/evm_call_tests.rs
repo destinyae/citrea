@@ -276,10 +276,9 @@ fn test_eip1559_fields_call() {
     );
     assert_eq!(
         high_fee_result,
-        // TODO: Fix here
         Err(RpcInvalidTransactionError::InsufficientFunds {
-            cost: U256::default(),
-            balance: U256::default()
+            cost: U256::from_str("34028236692093846346337460743176821145500000").unwrap(),
+            balance: U256::from(99999573573123175976u128)
         }
         .into())
     );
