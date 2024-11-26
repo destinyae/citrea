@@ -466,14 +466,6 @@ pub(crate) fn effective_gas_tip(
     }
 }
 
-#[allow(dead_code)]
-pub(crate) fn convert_u64_to_u256(u64: u64) -> U256 {
-    let bytes: [u8; 8] = u64.to_be_bytes();
-    let mut new_bytes = [0u8; 32];
-    new_bytes[24..].copy_from_slice(&bytes);
-    U256::from_be_bytes(new_bytes)
-}
-
 #[cfg(test)]
 mod tests {
     use reth_primitives::constants::GWEI_TO_WEI;
