@@ -3,8 +3,7 @@ use std::path::Path;
 
 use alloy_eips::eip1559::BaseFeeParams;
 use alloy_primitives::hex_literal::hex;
-use alloy_primitives::U256;
-use alloy_primitives::{address, Address, Bytes, TxKind, B256};
+use alloy_primitives::{address, Address, Bytes, TxKind, B256, U256};
 use lazy_static::lazy_static;
 use reth_primitives::constants::ETHEREUM_BLOCK_GAS_LIMIT;
 use reth_primitives::KECCAK_EMPTY;
