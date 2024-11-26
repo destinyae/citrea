@@ -1,5 +1,4 @@
-use alloy_eips::eip1559::calc_next_block_base_fee;
-use alloy_eips::eip1559::BaseFeeParams;
+use alloy_eips::eip1559::{calc_next_block_base_fee, BaseFeeParams};
 
 use crate::MIN_BASE_FEE_PER_GAS;
 

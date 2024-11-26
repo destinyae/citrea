@@ -1,7 +1,11 @@
 use std::ops::Range;
 
+use alloy_consensus::serde_bincode_compat as alloy_serde_bincode_compat;
 use alloy_primitives::{Address, Sealable, B256};
+use reth_primitives::transaction::serde_bincode_compat as reth_tx_serde_bincode_compat;
 use reth_primitives::{Header, SealedHeader, TransactionSigned};
+use reth_primitives_traits::serde_bincode_compat as reth_serde_bincode_compat;
+use serde_with::serde_as;
 
 /// Rlp encoded evm transaction.
 #[derive(
@@ -18,19 +22,23 @@ pub struct RlpEvmTransaction {
     pub rlp: Vec<u8>,
 }
 
+#[serde_as]
 #[derive(Debug, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 pub(crate) struct TransactionSignedAndRecovered {
     /// Signer of the transaction
     pub(crate) signer: Address,
     /// Signed transaction
+    #[serde_as(as = "reth_tx_serde_bincode_compat::TransactionSigned")]
     pub(crate) signed_transaction: TransactionSigned,
     /// Block the transaction was added to
     pub(crate) block_number: u64,
 }
 
+#[serde_as]
 #[derive(Debug, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 pub(crate) struct Block {
     /// Block header.
+    #[serde_as(as = "alloy_serde_bincode_compat::Header")]
     pub(crate) header: Header,
 
     /// L1 fee rate.
@@ -56,9 +64,11 @@ impl Block {
     }
 }
 
+#[serde_as]
 #[derive(Debug, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 pub(crate) struct SealedBlock {
     /// Block header.
+    #[serde_as(as = "reth_serde_bincode_compat::SealedHeader")]
     pub(crate) header: SealedHeader,
 
     /// L1 fee rate.

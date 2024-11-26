@@ -2,7 +2,6 @@ use std::collections::BTreeMap;
 use std::ops::{Range, RangeInclusive};
 
 use alloy_consensus::Eip658Value;
-use alloy_rpc_types_eth::transaction::TransactionRequest;
 use alloy_eips::eip2930::AccessListWithGasUsed;
 use alloy_network::AnyNetwork;
 use alloy_primitives::TxKind::{Call, Create};
@@ -13,6 +12,7 @@ use alloy_rpc_types::{
     AnyNetworkBlock, AnyReceiptEnvelope, AnyTransactionReceipt, BlockOverrides, Log,
     ReceiptWithBloom, TransactionInfo, TransactionReceipt,
 };
+use alloy_rpc_types_eth::transaction::TransactionRequest;
 use alloy_rpc_types_eth::Block as AlloyRpcBlock;
 use alloy_rpc_types_trace::geth::{GethDebugTracingOptions, GethTrace};
 use alloy_serde::OtherFields;
@@ -566,7 +566,7 @@ impl<C: sov_modules_api::Context> Evm<C> {
                 _ => {
                     let block = self
                         .get_sealed_block_by_number(Some(block_number), working_set)?
-                        .ok_or(EthApiError::HeaderNotFound(block_id.unwrap()))?;
+                        .ok_or(EthApiError::HeaderNotFound(BlockNumberOrTag::Latest.into()))?;
 
                     sealed_block_to_block_env(&block.header)
                 }
@@ -662,7 +662,9 @@ impl<C: sov_modules_api::Context> Evm<C> {
                     let block = self
                         .get_sealed_block_by_number(block_number, working_set)?
                         // Is this ok : block_number.unwrap_or_default()
-                        .ok_or(EthApiError::HeaderNotFound(block_number.unwrap_or_default().into()))?;
+                        .ok_or(EthApiError::HeaderNotFound(
+                            block_number.unwrap_or_default().into(),
+                        ))?;
                     (block.l1_fee_rate, sealed_block_to_block_env(&block.header))
                 }
             };
@@ -777,7 +779,9 @@ impl<C: sov_modules_api::Context> Evm<C> {
                 _ => {
                     let block = self
                         .get_sealed_block_by_number(block_number, working_set)?
-                        .ok_or(EthApiError::HeaderNotFound(block_number.unwrap_or_default().into()))?;
+                        .ok_or(EthApiError::HeaderNotFound(
+                            block_number.unwrap_or_default().into(),
+                        ))?;
                     (
                         block.l1_fee_rate,
                         sealed_block_to_block_env(&block.header), // correct spec will be set later
@@ -1183,7 +1187,7 @@ impl<C: sov_modules_api::Context> Evm<C> {
                         base_fee: block.header.base_fee_per_gas.map(u128::from),
                         index: Some((number - block.transactions.start) as u64),
                     };
-            
+
                     let transaction = reth_rpc_types_compat::transaction::from_recovered_with_block_context::<
                         EthTxBuilder,
                     >(tx.into(), tx_info);

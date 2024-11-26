@@ -4,8 +4,7 @@ use std::hash::Hash;
 use std::iter::StepBy;
 use std::ops::{Range, RangeFrom, RangeInclusive, RangeTo};
 
-use alloy_primitives::{Address, BlockHash, B256};
-use alloy_primitives::{Bloom, BloomInput, U64};
+use alloy_primitives::{Address, BlockHash, Bloom, BloomInput, B256, U64};
 use itertools::EitherOrBoth::*;
 use itertools::Itertools;
 use reth_primitives::BlockNumberOrTag;

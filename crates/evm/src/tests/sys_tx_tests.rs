@@ -1,8 +1,7 @@
 use std::collections::HashMap;
 use std::str::FromStr;
 
-use alloy_primitives::LogData;
-use alloy_primitives::{address, b256, hex, TxKind, U64};
+use alloy_primitives::{address, b256, hex, LogData, TxKind, U64};
 use alloy_rpc_types::{TransactionInput, TransactionRequest};
 use reth_primitives::constants::ETHEREUM_BLOCK_GAS_LIMIT;
 use reth_primitives::{BlockNumberOrTag, Log};

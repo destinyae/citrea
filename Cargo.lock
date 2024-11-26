@@ -128,10 +128,12 @@ dependencies = [
  "alloy-primitives",
  "alloy-rlp",
  "alloy-serde",
+ "arbitrary",
  "auto_impl",
  "c-kzg",
  "derive_more 1.0.0",
  "serde",
+ "serde_with",
 ]
 
 [[package]]
@@ -169,6 +171,8 @@ checksum = "0069cf0642457f87a01a014f6dc29d5d893cd4fd8fddf0c3cdfad1bb3ebafc41"
 dependencies = [
  "alloy-primitives",
  "alloy-rlp",
+ "arbitrary",
+ "rand",
  "serde",
 ]
 
@@ -180,8 +184,11 @@ checksum = "ea59dc42102bc9a1905dc57901edc6dd48b9f38115df86c7d252acba70d71d04"
 dependencies = [
  "alloy-primitives",
  "alloy-rlp",
+ "arbitrary",
  "k256",
+ "rand",
  "serde",
+ "serde_with",
 ]
 
 [[package]]
@@ -195,6 +202,7 @@ dependencies = [
  "alloy-primitives",
  "alloy-rlp",
  "alloy-serde",
+ "arbitrary",
  "c-kzg",
  "derive_more 1.0.0",
  "once_cell",
@@ -280,9 +288,11 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9fce5dbd6a4f118eecc4719eaa9c7ffc31c315e6c5ccde3642db927802312425"
 dependencies = [
  "alloy-rlp",
+ "arbitrary",
  "bytes",
  "cfg-if",
  "const-hex",
+ "derive_arbitrary",
  "derive_more 1.0.0",
  "foldhash",
  "getrandom",
@@ -294,6 +304,7 @@ dependencies = [
  "keccak-asm",
  "paste",
  "proptest",
+ "proptest-derive 0.5.0",
  "rand",
  "ruint",
  "rustc-hash 2.0.0",
@@ -521,6 +532,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9dff0ab1cdd43ca001e324dc27ee0e8606bd2161d6623c63e0e0b8c4dfc13600"
 dependencies = [
  "alloy-primitives",
+ "arbitrary",
  "serde",
  "serde_json",
 ]
@@ -1927,6 +1939,7 @@ dependencies = [
  "reth-db",
  "reth-errors",
  "reth-primitives",
+ "reth-primitives-traits",
  "reth-provider",
  "reth-rpc",
  "reth-rpc-eth-api",
@@ -1940,6 +1953,7 @@ dependencies = [
  "secp256k1",
  "serde",
  "serde_json",
+ "serde_with",
  "sov-modules-api",
  "sov-prover-storage-manager",
  "sov-rollup-interface",
@@ -3681,6 +3695,7 @@ version = "2.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "707907fe3c25f5424cce2cb7e1cbcafee6bdbe735ca90ef77c29e84591e5b9da"
 dependencies = [
+ "arbitrary",
  "equivalent",
  "hashbrown 0.15.1",
  "serde",
@@ -4737,8 +4752,10 @@ dependencies = [
  "alloy-primitives",
  "alloy-rlp",
  "alloy-serde",
+ "arbitrary",
  "derive_more 1.0.0",
  "serde",
+ "serde_with",
  "spin",
 ]
 
@@ -5122,6 +5139,17 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 1.0.109",
+]
+
+[[package]]
+name = "proptest-derive"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6ff7ff745a347b87471d859a377a9a404361e7efc2a971d73424a6d183c0fc77"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.87",
 ]
 
 [[package]]
@@ -6073,6 +6101,7 @@ dependencies = [
  "k256",
  "modular-bitfield",
  "once_cell",
+ "op-alloy-consensus",
  "rayon",
  "reth-codecs",
  "reth-ethereum-forks",
@@ -6082,6 +6111,7 @@ dependencies = [
  "revm-primitives",
  "secp256k1",
  "serde",
+ "serde_with",
  "zstd",
 ]
 
@@ -6103,6 +6133,7 @@ dependencies = [
  "revm-primitives",
  "roaring",
  "serde",
+ "serde_with",
 ]
 
 [[package]]
@@ -7147,6 +7178,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2c3cc4c2511671f327125da14133d0c5c5d137f006a1017a16f557bc85b16286"
 dependencies = [
  "alloy-rlp",
+ "arbitrary",
  "ark-ff 0.3.0",
  "ark-ff 0.4.2",
  "bytes",
@@ -7810,7 +7842,7 @@ dependencies = [
  "clap",
  "jsonrpsee",
  "proptest",
- "proptest-derive",
+ "proptest-derive 0.4.0",
  "schemars",
  "serde",
  "serde_json",
@@ -7854,7 +7886,7 @@ dependencies = [
  "jmt",
  "num_cpus",
  "proptest",
- "proptest-derive",
+ "proptest-derive 0.4.0",
  "rand",
  "rlimit",
  "rocksdb",
@@ -7934,7 +7966,7 @@ dependencies = [
  "jmt",
  "jsonrpsee",
  "proptest",
- "proptest-derive",
+ "proptest-derive 0.4.0",
  "rand",
  "schemars",
  "serde",
@@ -7965,7 +7997,7 @@ dependencies = [
  "hex",
  "jmt",
  "proptest",
- "proptest-derive",
+ "proptest-derive 0.4.0",
  "schemars",
  "serde",
  "serde_json",
@@ -8067,7 +8099,7 @@ dependencies = [
  "futures",
  "hex",
  "proptest",
- "proptest-derive",
+ "proptest-derive 0.4.0",
  "serde",
  "serde_json",
  "sha2",
@@ -8085,7 +8117,7 @@ dependencies = [
  "once_cell",
  "prometheus",
  "proptest",
- "proptest-derive",
+ "proptest-derive 0.4.0",
  "rocksdb",
  "sov-schema-db",
  "tempfile",
@@ -8104,7 +8136,7 @@ dependencies = [
  "borsh",
  "jmt",
  "proptest",
- "proptest-derive",
+ "proptest-derive 0.4.0",
  "serde",
  "sha2",
  "sov-db",

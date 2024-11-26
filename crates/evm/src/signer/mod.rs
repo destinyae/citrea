@@ -2,9 +2,8 @@ use std::collections::HashMap;
 
 use alloy_primitives::{Address, B256};
 use reth_primitives::{sign_message, Transaction, TransactionSigned};
-use secp256k1::{PublicKey, SecretKey};
-
 use reth_rpc_eth_types::SignError;
+use secp256k1::{PublicKey, SecretKey};
 
 /// Ethereum transaction signer.
 #[derive(Clone)]

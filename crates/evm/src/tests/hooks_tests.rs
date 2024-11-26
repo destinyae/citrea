@@ -1,6 +1,5 @@
 use alloy_primitives::hex_literal::hex;
-use alloy_primitives::Sealable;
-use alloy_primitives::{Address, Bloom, Bytes, B256, B64, U256, U64};
+use alloy_primitives::{Address, Bloom, Bytes, Sealable, B256, B64, U256, U64};
 use lazy_static::lazy_static;
 use rand::Rng;
 use reth_primitives::{Header, Signature, TransactionSigned, EMPTY_OMMER_ROOT_HASH, KECCAK_EMPTY};

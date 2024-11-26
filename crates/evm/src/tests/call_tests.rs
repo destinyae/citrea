@@ -1,13 +1,16 @@
 use std::collections::BTreeMap;
 use std::str::FromStr;
 
+use alloy_consensus::serde_bincode_compat;
 use alloy_eips::BlockId;
 use alloy_primitives::{address, b256, Address, Bytes, TxKind, B256, U64};
-use alloy_rpc_types::BlockOverrides;
-use alloy_rpc_types::{TransactionInput, TransactionRequest};
+use alloy_rpc_types::{BlockOverrides, TransactionInput, TransactionRequest};
 use reth_primitives::constants::ETHEREUM_BLOCK_GAS_LIMIT;
-use reth_primitives::{BlockNumberOrTag, Log, LogData};
+use reth_primitives::{BlockNumberOrTag, Log, LogData, SealedBlock, SealedHeader};
+use reth_primitives_traits::serde_bincode_compat as reth_serde_bincode_compat;
 use revm::primitives::{hex, KECCAK_EMPTY, U256};
+use serde::{Deserialize, Serialize};
+use serde_with::serde_as;
 use sov_modules_api::default_context::DefaultContext;
 use sov_modules_api::hooks::HookSoftConfirmationInfo;
 use sov_modules_api::utils::generate_address;
@@ -33,6 +36,22 @@ use crate::{
     AccountData, EvmConfig, RlpEvmTransaction, BASE_FEE_VAULT, L1_FEE_VAULT, PRIORITY_FEE_VAULT,
 };
 type C = DefaultContext;
+
+#[test]
+fn serde_block_with_bcs() {
+    #[serde_as]
+    #[derive(Debug, PartialEq, Eq, Serialize, Deserialize)]
+    struct Data {
+        #[serde_as(as = "reth_serde_bincode_compat::SealedHeader")]
+        pub b: SealedHeader,
+    }
+    let data = Data {
+        b: SealedHeader::default(),
+    };
+    let serialized_block = bcs::to_bytes(&data).unwrap();
+    let deserialized_block: Data = bcs::from_bytes(&serialized_block).unwrap();
+    println!("{:?}", deserialized_block);
+}
 
 #[test]
 fn call_multiple_test() {

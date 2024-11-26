@@ -1,7 +1,7 @@
 use core::ops::RangeInclusive;
 
+use alloy_primitives::map::{HashMap, HashSet};
 use alloy_primitives::{
-    map::{HashMap, HashSet},
     Address, BlockHash, BlockNumber, Bytes, StorageKey, StorageValue, TxHash, TxNumber, B256, U256,
 };
 use alloy_rpc_types::{AnyNetworkBlock, BlockTransactions};
@@ -19,7 +19,8 @@ use reth_provider::{
     RequestsProvider, StateProofProvider, StateProvider, StateProviderFactory, StateRootProvider,
     StorageRootProvider, TransactionsProvider, WithdrawalsProvider,
 };
-use reth_trie::{updates::TrieUpdates, HashedPostState, HashedStorage, StorageProof};
+use reth_trie::updates::TrieUpdates;
+use reth_trie::{HashedPostState, HashedStorage, StorageProof};
 use sov_modules_api::WorkingSet;
 
 #[derive(Clone)]
