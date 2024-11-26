@@ -2,7 +2,6 @@
 
 use alloy_network::eip2718::Decodable2718;
 use alloy_primitives::Bytes;
-use alloy_rlp::Decodable;
 use reth_primitives::{PooledTransactionsElement, PooledTransactionsElementEcRecovered};
 use reth_rpc_eth_types::error::{EthApiError, EthResult};
 

@@ -1,7 +1,6 @@
 use alloy_consensus::{TxEip1559 as RethTxEip1559, TxEip4844 as RethTxEip4844};
 use alloy_eips::eip2718::Encodable2718;
 use alloy_primitives::{Address, Bytes as RethBytes, TxKind, B256, U256};
-use alloy_rlp::Encodable;
 use rand::rngs::StdRng;
 use rand::SeedableRng;
 use reth_primitives::Transaction as RethTransaction;

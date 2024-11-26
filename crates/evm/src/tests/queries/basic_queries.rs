@@ -2,7 +2,7 @@ use std::collections::BTreeMap;
 
 use alloy_primitives::{address, b256, TxKind, U64};
 use alloy_rpc_types::{
-    AnyNetworkBlock, AnyTransactionReceipt, Block, TransactionInput, TransactionRequest,
+    AnyNetworkBlock, AnyTransactionReceipt, TransactionInput, TransactionRequest,
 };
 use alloy_serde::OtherFields;
 use reth_primitives::{BlockId, BlockNumberOrTag};

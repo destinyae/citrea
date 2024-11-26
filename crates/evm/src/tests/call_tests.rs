@@ -1,12 +1,11 @@
 use std::collections::BTreeMap;
 use std::str::FromStr;
 
-use alloy_consensus::serde_bincode_compat;
 use alloy_eips::BlockId;
 use alloy_primitives::{address, b256, Address, Bytes, TxKind, B256, U64};
 use alloy_rpc_types::{BlockOverrides, TransactionInput, TransactionRequest};
 use reth_primitives::constants::ETHEREUM_BLOCK_GAS_LIMIT;
-use reth_primitives::{BlockNumberOrTag, Log, LogData, SealedBlock, SealedHeader};
+use reth_primitives::{BlockNumberOrTag, Log, LogData, SealedHeader};
 use reth_primitives_traits::serde_bincode_compat as reth_serde_bincode_compat;
 use revm::primitives::{hex, KECCAK_EMPTY, U256};
 use serde::{Deserialize, Serialize};

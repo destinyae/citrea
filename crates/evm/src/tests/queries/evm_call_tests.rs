@@ -1,7 +1,6 @@
 use std::collections::HashMap;
 use std::str::FromStr;
 
-use alloy_primitives::map::FbBuildHasher;
 use alloy_primitives::{address, Address, Bytes, TxKind, B256};
 use alloy_rpc_types::state::AccountOverride;
 use alloy_rpc_types::{BlockId, TransactionInput, TransactionRequest};

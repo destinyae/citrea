@@ -3,7 +3,6 @@ use std::sync::Arc;
 use alloy_eips::eip2718::Encodable2718;
 use alloy_network::AnyNetwork;
 use alloy_primitives::{Bytes, B256};
-use alloy_rlp::Encodable;
 use citrea_evm::Evm;
 use futures::channel::mpsc::UnboundedSender;
 use jsonrpsee::core::RpcResult;

@@ -1,6 +1,6 @@
 use alloy_eips::eip1559::BaseFeeParams;
 use alloy_primitives::hex_literal::hex;
-use alloy_primitives::{Address, Bloom, Bytes, B256, B64, U256, U64};
+use alloy_primitives::{Address, Bloom, Bytes, B256, B64, U256};
 use lazy_static::lazy_static;
 use reth_primitives::constants::{EMPTY_RECEIPTS, EMPTY_TRANSACTIONS, ETHEREUM_BLOCK_GAS_LIMIT};
 use reth_primitives::{Header, SealedHeader, EMPTY_OMMER_ROOT_HASH};

@@ -6,7 +6,6 @@ use std::vec;
 
 use alloy_eips::eip2718::Encodable2718;
 use alloy_primitives::{Address, Bytes, TxHash};
-use alloy_rlp::Encodable;
 use anyhow::{anyhow, bail};
 use backoff::future::retry as retry_backoff;
 use backoff::ExponentialBackoffBuilder;
