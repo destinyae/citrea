@@ -242,10 +242,9 @@ fn call_with_high_gas_price() {
 
     assert_eq!(
         call_result,
-        // TODO: Fix here
         Err(RpcInvalidTransactionError::InsufficientFunds {
-            cost: U256::default(),
-            balance: U256::default()
+            cost: U256::from(1000000000000000000000000000u128),
+            balance: U256::from(99999573573123175976u128)
         }
         .into())
     );
