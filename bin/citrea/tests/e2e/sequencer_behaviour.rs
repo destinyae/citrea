@@ -284,7 +284,7 @@ async fn transaction_failing_on_l1_is_removed_from_mempool() -> Result<(), anyho
         .await;
 
     assert_eq!(
-        block.header.base_fee_per_gas.unwrap(),
+        block.header.base_fee_per_gas.unwrap() as u128,
         second_block_base_fee
     );
 
@@ -293,7 +293,7 @@ async fn transaction_failing_on_l1_is_removed_from_mempool() -> Result<(), anyho
         .await;
 
     let soft_confirmation = seq_test_client
-        .ledger_get_soft_confirmation_by_number::<MockDaSpec>(block.header.number.unwrap())
+        .ledger_get_soft_confirmation_by_number::<MockDaSpec>(block.header.number)
         .await
         .unwrap();
 
@@ -301,7 +301,7 @@ async fn transaction_failing_on_l1_is_removed_from_mempool() -> Result<(), anyho
     assert!(tx_from_mempool.is_none());
     assert_eq!(soft_confirmation.txs.unwrap().len(), 0);
 
-    wait_for_l2_block(&full_node_test_client, block.header.number.unwrap(), None).await;
+    wait_for_l2_block(&full_node_test_client, block.header.number, None).await;
 
     let block_from_full_node = full_node_test_client
         .eth_get_block_by_number_with_detail(Some(BlockNumberOrTag::Latest))

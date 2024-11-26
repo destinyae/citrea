@@ -96,8 +96,8 @@ async fn test_reopen_full_node() -> Result<(), anyhow::Error> {
         .eth_get_block_by_number_with_detail(Some(BlockNumberOrTag::Latest))
         .await;
 
-    assert_eq!(seq_last_block.header.number.unwrap(), 10);
-    assert_eq!(full_node_last_block.header.number.unwrap(), 10);
+    assert_eq!(seq_last_block.header.number, 10);
+    assert_eq!(full_node_last_block.header.number, 10);
 
     assert_eq!(
         seq_last_block.header.state_root,
@@ -164,8 +164,8 @@ async fn test_reopen_full_node() -> Result<(), anyhow::Error> {
         .eth_get_block_by_number_with_detail(Some(BlockNumberOrTag::Latest))
         .await;
 
-    assert_eq!(seq_last_block.header.number.unwrap(), 110);
-    assert_eq!(full_node_last_block.header.number.unwrap(), 110);
+    assert_eq!(seq_last_block.header.number, 110);
+    assert_eq!(full_node_last_block.header.number, 110);
 
     assert_eq!(
         seq_last_block.header.state_root,
@@ -210,7 +210,7 @@ async fn test_reopen_sequencer() -> Result<(), anyhow::Error> {
     let block = seq_test_client
         .eth_get_block_by_number(Some(BlockNumberOrTag::Latest))
         .await;
-    assert_eq!(block.header.number.unwrap(), 0);
+    assert_eq!(block.header.number, 0);
 
     // close sequencer
     seq_task.abort();
@@ -257,10 +257,7 @@ async fn test_reopen_sequencer() -> Result<(), anyhow::Error> {
 
     // make sure the state roots are the same
     assert_eq!(seq_last_block.header.state_root, block.header.state_root);
-    assert_eq!(
-        seq_last_block.header.number.unwrap(),
-        block.header.number.unwrap()
-    );
+    assert_eq!(seq_last_block.header.number, block.header.number);
 
     seq_test_client.send_publish_batch_request().await;
     seq_test_client.send_publish_batch_request().await;
@@ -272,8 +269,7 @@ async fn test_reopen_sequencer() -> Result<(), anyhow::Error> {
             .eth_get_block_by_number(Some(BlockNumberOrTag::Latest))
             .await
             .header
-            .number
-            .unwrap(),
+            .number,
         2
     );
 

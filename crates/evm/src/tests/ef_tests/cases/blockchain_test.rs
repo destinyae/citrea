@@ -150,7 +150,7 @@ impl Case for BlockchainTestCase {
                     gas_used: case.genesis_block_header.gas_used.to(),
                     timestamp: case.genesis_block_header.timestamp.to(),
                     mix_hash: case.genesis_block_header.mix_hash,
-                    nonce: case.genesis_block_header.nonce.into(),
+                    nonce: case.genesis_block_header.nonce,
                     base_fee_per_gas: case.genesis_block_header.base_fee_per_gas.map(|b| b.to()),
                     extra_data: case.genesis_block_header.extra_data.clone(),
                     // EIP-4844 related fields

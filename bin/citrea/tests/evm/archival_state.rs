@@ -135,8 +135,7 @@ async fn run_archival_valid_tests(addr: Address, seq_test_client: &TestClient) {
         .eth_get_block_by_number(None)
         .await
         .header
-        .hash
-        .unwrap();
+        .hash;
     assert_eq!(
         seq_test_client
             .eth_get_balance(addr, Some(BlockId::Number(BlockNumberOrTag::Latest)))
@@ -217,8 +216,7 @@ async fn run_archival_valid_tests(addr: Address, seq_test_client: &TestClient) {
         .eth_get_block_by_number(None)
         .await
         .header
-        .hash
-        .unwrap();
+        .hash;
     // Wait for changeset storage
     sleep(Duration::from_secs(2)).await;
 
@@ -276,8 +274,7 @@ async fn run_archival_valid_tests(addr: Address, seq_test_client: &TestClient) {
             .eth_get_block_by_number(Some(BlockNumberOrTag::Number(i)))
             .await
             .header
-            .hash
-            .unwrap();
+            .hash;
 
         assert_eq!(
             seq_test_client
@@ -414,8 +411,7 @@ async fn run_archival_valid_tests(addr: Address, seq_test_client: &TestClient) {
         .eth_get_block_by_number(Some(BlockNumberOrTag::Latest))
         .await
         .header
-        .hash
-        .unwrap();
+        .hash;
 
     let code = seq_test_client
         .eth_get_code(contract_address, Some(BlockId::Hash(block_hash_9.into())))
@@ -428,8 +424,7 @@ async fn run_archival_valid_tests(addr: Address, seq_test_client: &TestClient) {
         .eth_get_block_by_number(Some(BlockNumberOrTag::Number(8)))
         .await
         .header
-        .hash
-        .unwrap();
+        .hash;
 
     let non_existent_code = seq_test_client
         .eth_get_code(contract_address, Some(BlockId::Hash(block_hash_8.into())))
@@ -470,8 +465,7 @@ async fn run_archival_valid_tests(addr: Address, seq_test_client: &TestClient) {
         .eth_get_block_by_number(None)
         .await
         .header
-        .hash
-        .unwrap();
+        .hash;
 
     let storage_value = seq_test_client
         .eth_get_storage_at(
@@ -498,8 +492,7 @@ async fn run_archival_valid_tests(addr: Address, seq_test_client: &TestClient) {
         .eth_get_block_by_number(Some(BlockNumberOrTag::Number(11)))
         .await
         .header
-        .hash
-        .unwrap();
+        .hash;
 
     let previous_storage_value = seq_test_client
         .eth_get_storage_at(

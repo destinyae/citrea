@@ -402,7 +402,7 @@ async fn test_ledger_get_head_soft_confirmation() {
         .await
         .unwrap()
         .unwrap();
-    assert_eq!(latest_block.header.number.unwrap(), 2);
+    assert_eq!(latest_block.header.number, 2);
     assert_eq!(
         head_soft_confirmation.state_root.as_slice(),
         latest_block.header.state_root.as_slice()
@@ -564,8 +564,8 @@ async fn execute_blocks(
         .eth_get_block_by_number_with_detail(Some(BlockNumberOrTag::Latest))
         .await;
 
-    assert_eq!(seq_last_block.header.number.unwrap(), 504);
-    assert_eq!(full_node_last_block.header.number.unwrap(), 504);
+    assert_eq!(seq_last_block.header.number, 504);
+    assert_eq!(full_node_last_block.header.number, 504);
 
     assert_eq!(
         seq_last_block.header.state_root,

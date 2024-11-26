@@ -25,7 +25,7 @@ use sov_rollup_interface::rpc::{
     SoftConfirmationResponse, SoftConfirmationStatus, VerifiedBatchProofResponse,
 };
 
-pub const SEND_ETH_GAS: u128 = 21001;
+pub const SEND_ETH_GAS: u64 = 21001;
 pub const MAX_FEE_PER_GAS: u128 = 1000000001;
 
 pub struct TestClient {
@@ -272,7 +272,7 @@ impl TestClient {
         to_addr: Address,
         max_priority_fee_per_gas: Option<u128>,
         max_fee_per_gas: Option<u128>,
-        gas: u128,
+        gas: u64,
         value: u128,
     ) -> Result<PendingTransactionBuilder<'_, Http<HyperClient>, Ethereum>, anyhow::Error> {
         let nonce = self.current_nonce.fetch_add(1, Ordering::Relaxed);
@@ -403,7 +403,7 @@ impl TestClient {
     pub(crate) async fn eth_get_block_by_number_with_detail(
         &self,
         block_number: Option<BlockNumberOrTag>,
-    ) -> Block {
+    ) -> AnyNetworkBlock {
         self.http_client
             .request("eth_getBlockByNumber", rpc_params![block_number, true])
             .await

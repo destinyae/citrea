@@ -79,7 +79,7 @@ async fn test_eth_subscriptions() -> Result<(), Box<dyn std::error::Error>> {
 
         let block = last_received_block.lock().unwrap();
         let block = block.as_ref().unwrap();
-        assert_eq!(block.header.number, Some(2));
+        assert_eq!(block.header.number, 2);
         assert!(block.transactions.is_empty());
     }
 
@@ -98,7 +98,7 @@ async fn test_eth_subscriptions() -> Result<(), Box<dyn std::error::Error>> {
 
         let block = last_received_block.lock().unwrap();
         let block = block.as_ref().unwrap();
-        assert_eq!(block.header.number, Some(3));
+        assert_eq!(block.header.number, 3);
         assert_eq!(block.transactions.len(), 1);
         assert_eq!(block.transactions.hashes().last().unwrap().clone(), tx_hash);
     }
@@ -180,7 +180,7 @@ async fn test_eth_subscriptions() -> Result<(), Box<dyn std::error::Error>> {
         let block = last_received_block.lock().unwrap();
         let block = block.as_ref().unwrap();
         let mut tx_hashes = block.transactions.hashes();
-        assert_eq!(block.header.number, Some(5));
+        assert_eq!(block.header.number, 5);
         assert_eq!(block.transactions.len(), 2);
         assert_eq!(tx_hashes.next().unwrap().clone(), tx_hash1);
         assert_eq!(tx_hashes.next().unwrap().clone(), tx_hash2);

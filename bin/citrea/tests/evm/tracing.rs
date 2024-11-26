@@ -231,8 +231,7 @@ async fn tracing_tests() -> Result<(), Box<dyn std::error::Error>> {
         .eth_get_block_by_number(Some(BlockNumberOrTag::Number(3)))
         .await
         .header
-        .hash
-        .unwrap();
+        .hash;
 
     let traces = test_client
         .debug_trace_block_by_hash(

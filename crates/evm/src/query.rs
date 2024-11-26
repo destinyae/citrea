@@ -444,7 +444,7 @@ impl<C: sov_modules_api::Context> Evm<C> {
             block_hash: Some(block.header.hash()),
             block_number: Some(tx.block_number),
             base_fee: block.header.base_fee_per_gas.map(u128::from),
-            index: Some((tx_number - block.transactions.start) as u64),
+            index: Some(tx_number - block.transactions.start),
         };
 
         let transaction = reth_rpc_types_compat::transaction::from_recovered_with_block_context::<
@@ -495,7 +495,7 @@ impl<C: sov_modules_api::Context> Evm<C> {
             block_hash: Some(block.header.hash()),
             block_number: Some(tx.block_number),
             base_fee: block.header.base_fee_per_gas.map(u128::from),
-            index: Some((tx_number - block.transactions.start) as u64),
+            index: Some(tx_number - block.transactions.start),
         };
 
         let transaction = reth_rpc_types_compat::transaction::from_recovered_with_block_context::<
@@ -970,7 +970,7 @@ impl<C: sov_modules_api::Context> Evm<C> {
             .unwrap_or(block_env_gas_limit);
 
         // if the provided gas limit is less than computed cap, use that
-        tx_env.gas_limit = std::cmp::min(tx_env.gas_limit, highest_gas_limit as u64); // highest_gas_limit is capped to u64::MAX
+        tx_env.gas_limit = std::cmp::min(tx_env.gas_limit, highest_gas_limit); // highest_gas_limit is capped to u64::MAX
 
         let evm_db = self.get_db(working_set, current_spec);
 
@@ -1037,7 +1037,7 @@ impl<C: sov_modules_api::Context> Evm<C> {
         // possible range NOTE: this is the gas the transaction used, which is less than the
         // transaction requires to succeed
         let gas_used = result.gas_used();
-        let mut highest_gas_limit: u64 = highest_gas_limit.try_into().unwrap_or(u64::MAX);
+        let mut highest_gas_limit: u64 = highest_gas_limit;
 
         // https://github.com/paradigmxyz/reth/pull/7133/files
         // the lowest value is capped by the gas used by the unconstrained transaction
@@ -1185,14 +1185,14 @@ impl<C: sov_modules_api::Context> Evm<C> {
                         block_hash: Some(block.header.hash()),
                         block_number: Some(block.header.number),
                         base_fee: block.header.base_fee_per_gas.map(u128::from),
-                        index: Some((number - block.transactions.start) as u64),
+                        index: Some(number - block.transactions.start),
                     };
 
-                    let transaction = reth_rpc_types_compat::transaction::from_recovered_with_block_context::<
-                        EthTxBuilder,
-                    >(tx.into(), tx_info);
+                    
 
-            transaction
+            reth_rpc_types_compat::transaction::from_recovered_with_block_context::<
+                        EthTxBuilder,
+                    >(tx.into(), tx_info)
         });
 
         Ok(transaction)
