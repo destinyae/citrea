@@ -471,7 +471,7 @@ fn call_test() {
 
 fn check_against_third_block(block: &AnyNetworkBlock) {
     // details = false
-    let mut inner_block = serde_json::from_value::<AnyNetworkBlock>(json!({
+    let inner_block = serde_json::from_value::<AnyNetworkBlock>(json!({
         "baseFeePerGas": "0x2de0b039",
         "difficulty": "0x0",
         "extraData": "0x",
@@ -501,22 +501,22 @@ fn check_against_third_block(block: &AnyNetworkBlock) {
         "uncles": []
     })).unwrap();
 
-    inner_block.other.insert(
+    let mut rich_block: AnyNetworkBlock = AnyNetworkBlock {
+        inner: inner_block.inner,
+        other: OtherFields::new(BTreeMap::new()),
+    };
+
+    rich_block.other.insert(
         "l1FeeRate".to_string(),
         serde_json::Value::Number(serde_json::Number::from(1)),
     );
 
-    inner_block.other.insert(
+    rich_block.other.insert(
         "l1Hash".to_string(),
         serde_json::Value::String(
             "0x0808080808080808080808080808080808080808080808080808080808080808".to_string(),
         ),
     );
-
-    let rich_block: AnyNetworkBlock = AnyNetworkBlock {
-        inner: inner_block.inner,
-        other: OtherFields::new(BTreeMap::new()),
-    };
 
     assert_eq!(block, &rich_block);
 }

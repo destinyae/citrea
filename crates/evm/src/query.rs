@@ -566,7 +566,9 @@ impl<C: sov_modules_api::Context> Evm<C> {
                 _ => {
                     let block = self
                         .get_sealed_block_by_number(Some(block_number), working_set)?
-                        .ok_or(EthApiError::HeaderNotFound(BlockNumberOrTag::Latest.into()))?;
+                        .ok_or(EthApiError::HeaderNotFound(
+                            block_id.unwrap_or(BlockNumberOrTag::Latest.into()),
+                        ))?;
 
                     sealed_block_to_block_env(&block.header)
                 }

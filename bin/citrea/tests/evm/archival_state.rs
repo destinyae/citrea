@@ -62,7 +62,7 @@ async fn run_archival_fail_tests(addr: Address, seq_test_client: &TestClient) {
 
     assert!(invalid_block_balance
         .to_string()
-        .contains("unknown block number"));
+        .contains("block not found: number 0x2d2"));
 
     let invalid_block_balance = seq_test_client
         .eth_get_balance(addr, Some(BlockId::Hash(invalid_block_hash.into())))
@@ -83,7 +83,7 @@ async fn run_archival_fail_tests(addr: Address, seq_test_client: &TestClient) {
         .unwrap_err();
     assert!(invalid_block_storage
         .to_string()
-        .contains("unknown block number"));
+        .contains("block not found:"));
 
     let invalid_block_storage = seq_test_client
         .eth_get_storage_at(
@@ -101,9 +101,7 @@ async fn run_archival_fail_tests(addr: Address, seq_test_client: &TestClient) {
         .eth_get_code(addr, Some(BlockId::Number(BlockNumberOrTag::Number(722))))
         .await
         .unwrap_err();
-    assert!(invalid_block_code
-        .to_string()
-        .contains("unknown block number"));
+    assert!(invalid_block_code.to_string().contains("block not found:"));
 
     let invalid_block_code = seq_test_client
         .eth_get_code(addr, Some(BlockId::Hash(invalid_block_hash.into())))
@@ -119,7 +117,7 @@ async fn run_archival_fail_tests(addr: Address, seq_test_client: &TestClient) {
         .unwrap_err();
     assert!(invalid_block_tx_count
         .to_string()
-        .contains("unknown block number"));
+        .contains("block not found:"));
 
     let invalid_block_tx_count = seq_test_client
         .eth_get_transaction_count(addr, Some(BlockId::Hash(invalid_block_hash.into())))
