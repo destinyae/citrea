@@ -1,4 +1,4 @@
-use alloy_primitives::{Bloom, Bytes, B256, B64, U256};
+use alloy_primitives::{Bloom, Bytes, B256, U256};
 use citrea_primitives::basefee::calculate_next_block_base_fee;
 use revm::primitives::{BlobExcessGasAndPrice, BlockEnv, SpecId};
 use sov_modules_api::hooks::HookSoftConfirmationInfo;
@@ -190,7 +190,7 @@ where
             .map(|tx| tx.receipt.receipt.clone().with_bloom())
             .collect();
 
-        let header = reth_primitives::Header {
+        let header = crate::primitive_types::Header {
             parent_hash: parent_block.header.hash(),
             timestamp: self.block_env.timestamp.saturating_to(),
             number: self.block_env.number.saturating_to(),
@@ -210,7 +210,7 @@ where
             gas_limit: self.block_env.gas_limit.saturating_to(),
             gas_used,
             mix_hash: self.block_env.prevrandao.unwrap_or_default(),
-            nonce: B64::ZERO,
+            nonce: 0,
             base_fee_per_gas: Some(self.block_env.basefee.saturating_to()),
             extra_data: Bytes::default(),
             // EIP-4844 related fields

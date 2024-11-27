@@ -134,7 +134,7 @@ impl Case for BlockchainTestCase {
                 let mut evm_config = EvmConfig::default();
                 config_push_contracts(&mut evm_config, None);
                 // Set this base fee based on what's set in genesis.
-                let header = reth_primitives::Header {
+                let header = crate::primitive_types::Header {
                     parent_hash: case.genesis_block_header.parent_hash,
                     ommers_hash: EMPTY_OMMER_ROOT_HASH,
                     beneficiary: evm_config.coinbase,
@@ -150,7 +150,7 @@ impl Case for BlockchainTestCase {
                     gas_used: case.genesis_block_header.gas_used.to(),
                     timestamp: case.genesis_block_header.timestamp.to(),
                     mix_hash: case.genesis_block_header.mix_hash,
-                    nonce: case.genesis_block_header.nonce,
+                    nonce: case.genesis_block_header.nonce.into(),
                     base_fee_per_gas: case.genesis_block_header.base_fee_per_gas.map(|b| b.to()),
                     extra_data: case.genesis_block_header.extra_data.clone(),
                     // EIP-4844 related fields

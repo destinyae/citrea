@@ -97,7 +97,7 @@ fn end_soft_confirmation_hook_sets_head() {
     assert_eq!(
         head,
         Block {
-            header: Header {
+            header: crate::primitive_types::Header {
                 parent_hash: B256::from(hex!(
                     "3ed1353792788c24d1a7566cc8ed36eec70334770fc2a377ea7eb31eac41efcd"
                 )),
@@ -119,7 +119,7 @@ fn end_soft_confirmation_hook_sets_head() {
                 gas_used: 200u64,
                 timestamp: 54,
                 mix_hash: *DA_ROOT_HASH,
-                nonce: B64::ZERO,
+                nonce: 0,
                 base_fee_per_gas: Some(767816299),
                 extra_data: Bytes::default(),
                 blob_gas_used: None,
