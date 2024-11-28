@@ -1,4 +1,3 @@
-use std::ops::DerefMut;
 use std::sync::Arc;
 
 use async_trait::async_trait;
@@ -27,7 +26,7 @@ where
 {
     thread_pool: rayon::ThreadPool,
 
-    proof_mode: Arc<Mutex<ProofGenMode<Da, Vm, Stf>>>,
+    proof_mode: ProofGenMode<Da, Vm, Stf>,
 
     da_service: Arc<Da>,
     vm: Vm,
@@ -80,7 +79,7 @@ where
 
         Ok(Self {
             thread_pool,
-            proof_mode: Arc::new(Mutex::new(proof_mode)),
+            proof_mode,
             da_service,
             vm,
             zk_storage,
@@ -190,7 +189,7 @@ where
 
     async fn prove(&self) -> anyhow::Result<Vec<Proof>> {
         let mut proof_queue = self.proof_queue.lock().await;
-        if let ProofGenMode::Skip = *self.proof_mode.lock().await {
+        if let ProofGenMode::Skip = self.proof_mode {
             tracing::debug!("Skipped proving {} proofs", proof_queue.len());
             proof_queue.clear();
             return Ok(vec![]);
@@ -233,7 +232,7 @@ where
 fn make_proof<Da, Vm, Stf>(
     mut vm: Vm,
     zk_storage: Stf::PreState,
-    proof_mode: Arc<Mutex<ProofGenMode<Da, Vm, Stf>>>,
+    proof_mode: ProofGenMode<Da, Vm, Stf>,
 ) -> Result<Proof, anyhow::Error>
 where
     Da: DaService,
@@ -241,13 +240,18 @@ where
     Stf: StateTransitionFunction<Da::Spec> + Send + Sync,
     Stf::PreState: Send + Sync,
 {
-    let mut proof_mode = proof_mode.blocking_lock();
-    match proof_mode.deref_mut() {
+    let proof_mode = proof_mode;
+    match proof_mode {
         ProofGenMode::Skip => Ok(Vec::default()),
-        ProofGenMode::Simulate(ref mut verifier) => verifier
-            .run_sequencer_commitments_in_da_slot(vm.simulate_with_hints(), zk_storage)
-            .map(|_| Vec::default())
-            .map_err(|e| anyhow::anyhow!("Guest execution must succeed but failed with {:?}", e)),
+        ProofGenMode::Simulate(verifier) => {
+            let mut verifier = verifier.blocking_lock();
+            verifier
+                .run_sequencer_commitments_in_da_slot(vm.simulate_with_hints(), zk_storage)
+                .map(|_| Vec::default())
+                .map_err(|e| {
+                    anyhow::anyhow!("Guest execution must succeed but failed with {:?}", e)
+                })
+        }
         ProofGenMode::Execute => vm.run(false),
         ProofGenMode::Prove => vm.run(true),
     }

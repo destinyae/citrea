@@ -29,8 +29,8 @@ use sov_rollup_interface::spec::SpecId;
 use sov_rollup_interface::zk::Zkvm;
 use sov_state::ZkStorage;
 use sov_stf_runner::ProverGuestRunConfig;
-use tokio::sync::broadcast;
 use tokio::sync::mpsc::unbounded_channel;
+use tokio::sync::{broadcast, Mutex};
 use tracing::instrument;
 
 use crate::CitreaRollupBlueprint;
@@ -201,7 +201,7 @@ impl RollupBlueprint for BitcoinRollup {
             ProverGuestRunConfig::Skip => ProofGenMode::Skip,
             ProverGuestRunConfig::Simulate => {
                 let stf_verifier = StateTransitionVerifier::new(zk_stf, da_verifier);
-                ProofGenMode::Simulate(stf_verifier)
+                ProofGenMode::Simulate(Arc::new(Mutex::new(stf_verifier)))
             }
             ProverGuestRunConfig::Execute => ProofGenMode::Execute,
             ProverGuestRunConfig::Prove => ProofGenMode::Prove,
@@ -241,7 +241,8 @@ impl RollupBlueprint for BitcoinRollup {
             ProverGuestRunConfig::Skip => ProofGenMode::Skip,
             ProverGuestRunConfig::Simulate => {
                 let stf_verifier = StateTransitionVerifier::new(zk_stf, da_verifier);
-                ProofGenMode::Simulate(stf_verifier)
+
+                ProofGenMode::Simulate(Arc::new(Mutex::new(stf_verifier)))
             }
             ProverGuestRunConfig::Execute => ProofGenMode::Execute,
             ProverGuestRunConfig::Prove => ProofGenMode::Prove,
