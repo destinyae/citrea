@@ -2,6 +2,7 @@ use std::sync::Arc;
 
 use async_trait::async_trait;
 use futures::future;
+use rand::Rng;
 use sov_db::ledger_db::LedgerDB;
 use sov_rollup_interface::da::DaData;
 use sov_rollup_interface::services::da::DaService;
@@ -67,8 +68,14 @@ where
             ProofGenMode::Execute => {
                 tracing::info!("Prover is configured to execute proving");
             }
-            ProofGenMode::Prove => {
-                tracing::info!("Prover is configured to prove");
+            ProofGenMode::Prove(proof_sampling_number) => {
+                if proof_sampling_number == 0 {
+                    tracing::info!("Prover is configured to prove");
+                } else {
+                    tracing::info!(
+                        "Prover is configured to prove with 1/{proof_sampling_number} sampling"
+                    );
+                }
             }
         };
 
@@ -253,6 +260,10 @@ where
                 })
         }
         ProofGenMode::Execute => vm.run(false),
-        ProofGenMode::Prove => vm.run(true),
+        ProofGenMode::Prove(proof_sampling_number) => {
+            let with_prove = proof_sampling_number == 0
+                || rand::thread_rng().gen_range(0..proof_sampling_number) == 0;
+            vm.run(with_prove)
+        }
     }
 }

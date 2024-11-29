@@ -12,7 +12,6 @@ use citrea_common::utils::merge_state_diffs;
 use citrea_common::BatchProverConfig;
 use citrea_primitives::compression::compress_blob;
 use citrea_primitives::MAX_TXBODY_SIZE;
-use rand::Rng;
 use serde::de::DeserializeOwned;
 use serde::Serialize;
 use sov_db::ledger_db::BatchProverLedgerOps;
@@ -233,25 +232,18 @@ where
                 l1_block.header().height(),
             );
 
-            // if proof_sampling_number is 0, then we always prove and submit
-            // otherwise we submit and prove with a probability of 1/proof_sampling_number
-            let should_prove = self.prover_config.proof_sampling_number == 0
-                || rand::thread_rng().gen_range(0..self.prover_config.proof_sampling_number) == 0;
-
-            if should_prove {
-                if l1_height >= self.skip_submission_until_l1 {
-                    prove_l1::<Da, Ps, Vm, DB, StateRoot, Witness, Tx>(
-                        self.prover_service.clone(),
-                        self.ledger_db.clone(),
-                        self.code_commitments_by_spec.clone(),
-                        l1_block.clone(),
-                        sequencer_commitments,
-                        inputs,
-                    )
-                    .await?;
-                } else {
-                    info!("Skipping proving for l1 height {}", l1_height);
-                }
+            if l1_height >= self.skip_submission_until_l1 {
+                prove_l1::<Da, Ps, Vm, DB, StateRoot, Witness, Tx>(
+                    self.prover_service.clone(),
+                    self.ledger_db.clone(),
+                    self.code_commitments_by_spec.clone(),
+                    l1_block.clone(),
+                    sequencer_commitments,
+                    inputs,
+                )
+                .await?;
+            } else {
+                info!("Skipping proving for l1 height {}", l1_height);
             }
 
             if let Err(e) = self

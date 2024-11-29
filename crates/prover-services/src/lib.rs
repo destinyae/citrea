@@ -9,6 +9,9 @@ use tokio::sync::Mutex;
 mod parallel;
 pub use parallel::*;
 
+type Simulator<Stf, DaVerifier, VmGuest> =
+    Arc<Mutex<StateTransitionVerifier<Stf, DaVerifier, VmGuest>>>;
+
 pub enum ProofGenMode<Da, Vm, Stf>
 where
     Da: DaService,
@@ -18,12 +21,19 @@ where
     /// Skips proving.
     Skip,
     /// The simulator runs the rollup verifier logic without even emulating the zkVM
-    Simulate(Arc<Mutex<StateTransitionVerifier<Stf, Da::Verifier, Vm::Guest>>>),
+    Simulate(Simulator<Stf, Da::Verifier, Vm::Guest>),
     /// The executor runs the rollup verification logic in the zkVM, but does not actually
     /// produce a zk proof
     Execute,
     /// The prover runs the rollup verification logic in the zkVM and produces a zk proof
-    Prove,
+    Prove(
+        /// Average number of commitments to prove
+        /// If proof_sampling_number is 0, then we always prove and submit
+        /// Otherwise we submit and prove with a probability of 1/proof_sampling_number
+        ///
+        /// proof_sampling_number:
+        usize,
+    ),
 }
 
 impl<Da, Vm, Stf> Clone for ProofGenMode<Da, Vm, Stf>
@@ -36,7 +46,7 @@ where
         match self {
             Self::Skip => Self::Skip,
             Self::Execute => Self::Execute,
-            Self::Prove => Self::Prove,
+            Self::Prove(proof_sampling_number) => Self::Prove(*proof_sampling_number),
             Self::Simulate(simulate) => Self::Simulate(Arc::clone(simulate)),
         }
     }
