@@ -119,7 +119,7 @@ where
         )
     }
 
-    async fn prove_all(&self, proof_queue: Vec<ProofData>) -> Vec<Proof> {
+    async fn prove_all(&self, elf: Vec<u8>, proof_queue: Vec<ProofData>) -> Vec<Proof> {
         let num_threads = self.thread_pool.current_num_threads();
 
         // Future buffer to keep track of ongoing provings
@@ -134,7 +134,7 @@ where
                 ongoing_proofs = remaining_proofs;
             }
 
-            let proof_fut = self.prove_one(proof_data);
+            let proof_fut = self.prove_one(elf.clone(), proof_data);
             ongoing_proofs.push(Box::pin(async move {
                 let proof = proof_fut.await;
                 (idx, proof)
@@ -150,7 +150,7 @@ where
         proofs
     }
 
-    async fn prove_one(&self, (input, assumptions): ProofData) -> Proof {
+    async fn prove_one(&self, elf: Vec<u8>, (input, assumptions): ProofData) -> Proof {
         let mut vm = self.vm.clone();
         let zk_storage = self.zk_storage.clone();
         let proof_mode = self.proof_mode.clone();
@@ -163,7 +163,7 @@ where
         let (tx, rx) = oneshot::channel();
         self.thread_pool.spawn(move || {
             let proof =
-                make_proof(vm, zk_storage, proof_mode).expect("Proof creation must not fail");
+                make_proof(vm, elf, zk_storage, proof_mode).expect("Proof creation must not fail");
             let _ = tx.send(proof);
         });
 
@@ -194,7 +194,7 @@ where
         proof_queue.push(proof_data);
     }
 
-    async fn prove(&self) -> anyhow::Result<Vec<Proof>> {
+    async fn prove(&self, elf: Vec<u8>) -> anyhow::Result<Vec<Proof>> {
         let mut proof_queue = self.proof_queue.lock().await;
         if let ProofGenMode::Skip = self.proof_mode {
             tracing::debug!("Skipped proving {} proofs", proof_queue.len());
@@ -211,7 +211,7 @@ where
         let proof_queue = std::mem::take(&mut *proof_queue);
 
         // Prove all
-        Ok(self.prove_all(proof_queue).await)
+        Ok(self.prove_all(elf, proof_queue).await)
     }
 
     async fn submit_proofs(
@@ -238,6 +238,7 @@ where
 
 fn make_proof<Da, Vm, Stf>(
     mut vm: Vm,
+    elf: Vec<u8>,
     zk_storage: Stf::PreState,
     proof_mode: ProofGenMode<Da, Vm, Stf>,
 ) -> Result<Proof, anyhow::Error>
@@ -259,11 +260,11 @@ where
                     anyhow::anyhow!("Guest execution must succeed but failed with {:?}", e)
                 })
         }
-        ProofGenMode::Execute => vm.run(false),
+        ProofGenMode::Execute => vm.run(elf, false),
         ProofGenMode::Prove(proof_sampling_number) => {
             let with_prove = proof_sampling_number == 0
                 || rand::thread_rng().gen_range(0..proof_sampling_number) == 0;
-            vm.run(with_prove)
+            vm.run(elf, with_prove)
         }
     }
 }
