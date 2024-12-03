@@ -251,7 +251,6 @@ where
     Stf: StateTransitionFunction<Da::Spec> + Send + Sync,
     Stf::PreState: Send + Sync,
 {
-    let proof_mode = proof_mode;
     match proof_mode {
         ProofGenMode::Skip => Ok(Vec::default()),
         ProofGenMode::Simulate(verifier) => {
