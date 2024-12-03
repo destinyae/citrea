@@ -193,7 +193,10 @@ impl RollupBlueprint for MockDemoRollup {
                 ProofGenMode::Simulate(Arc::new(Mutex::new(stf_verifier)))
             }
             ProverGuestRunConfig::Execute => ProofGenMode::Execute,
-            ProverGuestRunConfig::Prove => ProofGenMode::Prove(proof_sampling_number),
+            ProverGuestRunConfig::Prove => ProofGenMode::ProveWithSampling,
+            ProverGuestRunConfig::ProveWithFakeProofs => {
+                ProofGenMode::ProveWithSamplingWithFakeProofs(proof_sampling_number)
+            }
         };
 
         ParallelProverService::new(da_service.clone(), vm, proof_mode, zk_storage, 1, ledger_db)

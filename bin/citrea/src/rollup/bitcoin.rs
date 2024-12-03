@@ -264,7 +264,10 @@ impl RollupBlueprint for BitcoinRollup {
                 ProofGenMode::Simulate(Arc::new(Mutex::new(stf_verifier)))
             }
             ProverGuestRunConfig::Execute => ProofGenMode::Execute,
-            ProverGuestRunConfig::Prove => ProofGenMode::Prove(proof_sampling_number),
+            ProverGuestRunConfig::Prove => ProofGenMode::ProveWithSampling,
+            ProverGuestRunConfig::ProveWithFakeProofs => {
+                ProofGenMode::ProveWithSamplingWithFakeProofs(proof_sampling_number)
+            }
         };
 
         ParallelProverService::new_from_env(

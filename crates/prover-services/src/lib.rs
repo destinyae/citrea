@@ -26,10 +26,13 @@ where
     /// produce a zk proof
     Execute,
     /// The prover runs the rollup verification logic in the zkVM and produces a zk proof
-    Prove(
-        /// Average number of commitments to prove
-        /// If proof_sampling_number is 0, then we always prove and submit
-        /// Otherwise we submit and prove with a probability of 1/proof_sampling_number
+    ProveWithSampling,
+    /// The prover runs the rollup verification logic in the zkVM and produces a zk/fake proof
+    ProveWithSamplingWithFakeProofs(
+        /// Average number of _REAL_ commitments to prove
+        /// If proof_sampling_number is 0, then we always produce real proofs
+        /// Otherwise we prove with a probability of 1/proof_sampling_number,
+        ///  but produce fake proofs with a probability of (1-1/proof_sampling_number).
         ///
         /// proof_sampling_number:
         usize,
@@ -46,7 +49,10 @@ where
         match self {
             Self::Skip => Self::Skip,
             Self::Execute => Self::Execute,
-            Self::Prove(proof_sampling_number) => Self::Prove(*proof_sampling_number),
+            Self::ProveWithSampling => Self::ProveWithSampling,
+            Self::ProveWithSamplingWithFakeProofs(proof_sampling_number) => {
+                Self::ProveWithSamplingWithFakeProofs(*proof_sampling_number)
+            }
             Self::Simulate(simulate) => Self::Simulate(Arc::clone(simulate)),
         }
     }

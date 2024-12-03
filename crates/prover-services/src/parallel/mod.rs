@@ -68,12 +68,15 @@ where
             ProofGenMode::Execute => {
                 tracing::info!("Prover is configured to execute proving");
             }
-            ProofGenMode::Prove(proof_sampling_number) => {
+            ProofGenMode::ProveWithSampling => {
+                tracing::info!("Prover is configured to prove");
+            }
+            ProofGenMode::ProveWithSamplingWithFakeProofs(proof_sampling_number) => {
                 if proof_sampling_number == 0 {
-                    tracing::info!("Prover is configured to prove");
+                    tracing::info!("Prover is configured to always prove");
                 } else {
                     tracing::info!(
-                        "Prover is configured to prove with 1/{proof_sampling_number} sampling"
+                        "Prover is configured to prove with fake proofs with 1/{proof_sampling_number} sampling"
                     );
                 }
             }
@@ -261,7 +264,15 @@ where
                 })
         }
         ProofGenMode::Execute => vm.run(elf, false),
-        ProofGenMode::Prove(proof_sampling_number) => {
+        ProofGenMode::ProveWithSampling => {
+            // `make_proof` is called with a probability in this case.
+            // When it's called, we have to produce a real proof.
+            vm.run(elf, true)
+        }
+        ProofGenMode::ProveWithSamplingWithFakeProofs(proof_sampling_number) => {
+            // `make_proof` is called unconditionally in this case.
+            // When it's called, we have to calculate the probabiliry for a proof
+            //  and produce a real proof if we are lucky. If unlucky - produce a fake proof.
             let with_prove = proof_sampling_number == 0
                 || rand::thread_rng().gen_range(0..proof_sampling_number) == 0;
             vm.run(elf, with_prove)

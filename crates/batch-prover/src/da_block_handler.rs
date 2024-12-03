@@ -13,6 +13,7 @@ use citrea_common::BatchProverConfig;
 use citrea_primitives::compression::compress_blob;
 use citrea_primitives::forks::FORKS;
 use citrea_primitives::MAX_TXBODY_SIZE;
+use rand::Rng;
 use serde::de::DeserializeOwned;
 use serde::Serialize;
 use sov_db::ledger_db::BatchProverLedgerOps;
@@ -24,7 +25,7 @@ use sov_rollup_interface::services::da::{DaService, SlotData};
 use sov_rollup_interface::soft_confirmation::SignedSoftConfirmation;
 use sov_rollup_interface::spec::SpecId;
 use sov_rollup_interface::zk::ZkvmHost;
-use sov_stf_runner::ProverService;
+use sov_stf_runner::{ProverGuestRunConfig, ProverService};
 use tokio::select;
 use tokio::sync::{mpsc, Mutex};
 use tokio::time::{sleep, Duration};
@@ -237,19 +238,33 @@ where
                 l1_block.header().height(),
             );
 
-            if l1_height >= self.skip_submission_until_l1 {
-                prove_l1::<Da, Ps, Vm, DB, StateRoot, Witness, Tx>(
-                    self.prover_service.clone(),
-                    self.ledger_db.clone(),
-                    self.code_commitments_by_spec.clone(),
-                    self.elfs_by_spec.clone(),
-                    l1_block.clone(),
-                    sequencer_commitments,
-                    inputs,
-                )
-                .await?;
-            } else {
-                info!("Skipping proving for l1 height {}", l1_height);
+            let should_prove = match self.prover_config.proving_mode {
+                ProverGuestRunConfig::ProveWithFakeProofs => {
+                    // Unconditionally call `prove_l1()`
+                    true
+                }
+                _ => {
+                    // Call `prove_l1()` with a probability
+                    self.prover_config.proof_sampling_number == 0
+                        || rand::thread_rng().gen_range(0..self.prover_config.proof_sampling_number)
+                            == 0
+                }
+            };
+            if should_prove {
+                if l1_height >= self.skip_submission_until_l1 {
+                    prove_l1::<Da, Ps, Vm, DB, StateRoot, Witness, Tx>(
+                        self.prover_service.clone(),
+                        self.ledger_db.clone(),
+                        self.code_commitments_by_spec.clone(),
+                        self.elfs_by_spec.clone(),
+                        l1_block.clone(),
+                        sequencer_commitments,
+                        inputs,
+                    )
+                    .await?;
+                } else {
+                    info!("Skipping proving for l1 height {}", l1_height);
+                }
             }
 
             if let Err(e) = self
