@@ -1,6 +1,8 @@
 use std::ops::Range;
 
 use alloy_primitives::{Address, BlockNumber, Bloom, Bytes, Sealable, B256, B64, U256};
+use alloy_rlp::bytes::BufMut;
+use alloy_rlp::{Decodable, Encodable};
 use reth_primitives::transaction::serde_bincode_compat as reth_tx_serde_bincode_compat;
 use reth_primitives::{Header as AlloyHeader, SealedHeader, TransactionSigned};
 use reth_primitives_traits::serde_bincode_compat as reth_serde_bincode_compat;
@@ -133,6 +135,34 @@ impl From<Header> for AlloyHeader {
     }
 }
 
+impl From<AlloyHeader> for Header {
+    fn from(value: AlloyHeader) -> Self {
+        Self {
+            parent_hash: value.parent_hash,
+            ommers_hash: value.ommers_hash,
+            beneficiary: value.beneficiary,
+            state_root: value.state_root,
+            transactions_root: value.transactions_root,
+            receipts_root: value.receipts_root,
+            withdrawals_root: value.withdrawals_root,
+            logs_bloom: value.logs_bloom,
+            difficulty: value.difficulty,
+            number: value.number,
+            gas_limit: value.gas_limit,
+            gas_used: value.gas_used,
+            timestamp: value.timestamp,
+            mix_hash: value.mix_hash,
+            nonce: value.nonce.into(),
+            base_fee_per_gas: value.base_fee_per_gas,
+            blob_gas_used: value.blob_gas_used,
+            excess_blob_gas: value.excess_blob_gas,
+            parent_beacon_block_root: value.parent_beacon_block_root,
+            requests_root: value.requests_root,
+            extra_data: value.extra_data.clone(),
+        }
+    }
+}
+
 #[serde_as]
 #[derive(Debug, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 pub(crate) struct TransactionSignedAndRecovered {
@@ -148,6 +178,7 @@ pub(crate) struct TransactionSignedAndRecovered {
 #[derive(Debug, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 pub(crate) struct Block {
     /// Block header.
+    // #[serde_as(as = "serde_bincode_compat::Header")]
     pub(crate) header: Header,
 
     /// L1 fee rate.
@@ -179,7 +210,7 @@ impl Block {
 pub(crate) struct SealedBlock {
     /// Block header.
     #[serde_as(as = "reth_serde_bincode_compat::SealedHeader")]
-    pub(crate) header: SealedHeader,
+    pub(crate) header: SealedHeader<AlloyHeader>,
 
     /// L1 fee rate.
     pub(crate) l1_fee_rate: u128,
@@ -189,6 +220,59 @@ pub(crate) struct SealedBlock {
 
     /// Transactions in this block.
     pub(crate) transactions: Range<u64>,
+}
+
+impl Encodable for Block {
+    fn encode(&self, out: &mut dyn BufMut) {
+        let header: AlloyHeader = self.header.clone().into();
+        header.encode(out);
+        self.l1_fee_rate.encode(out);
+        self.l1_hash.encode(out);
+        self.transactions.start.encode(out);
+        self.transactions.end.encode(out);
+    }
+}
+
+impl Decodable for Block {
+    fn decode(buf: &mut &[u8]) -> alloy_rlp::Result<Self> {
+        let header: AlloyHeader = Decodable::decode(buf)?;
+        let l1_fee_rate = Decodable::decode(buf)?;
+        let l1_hash = Decodable::decode(buf)?;
+        let start = Decodable::decode(buf)?;
+        let end = Decodable::decode(buf)?;
+        Ok(Self {
+            header: header.into(),
+            l1_fee_rate,
+            l1_hash,
+            transactions: Range { start, end },
+        })
+    }
+}
+
+impl Encodable for SealedBlock {
+    fn encode(&self, out: &mut dyn BufMut) {
+        self.header.encode(out);
+        self.l1_fee_rate.encode(out);
+        self.l1_hash.encode(out);
+        self.transactions.start.encode(out);
+        self.transactions.end.encode(out);
+    }
+}
+
+impl Decodable for SealedBlock {
+    fn decode(buf: &mut &[u8]) -> alloy_rlp::Result<Self> {
+        let header = Decodable::decode(buf)?;
+        let l1_fee_rate = Decodable::decode(buf)?;
+        let l1_hash = Decodable::decode(buf)?;
+        let start = Decodable::decode(buf)?;
+        let end = Decodable::decode(buf)?;
+        Ok(Self {
+            header,
+            l1_fee_rate,
+            l1_hash,
+            transactions: Range { start, end },
+        })
+    }
 }
 
 #[derive(Debug, PartialEq, Clone, serde::Serialize, serde::Deserialize)]

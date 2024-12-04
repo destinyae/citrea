@@ -4,6 +4,7 @@ use revm::primitives::{BlobExcessGasAndPrice, BlockEnv, SpecId};
 use sov_modules_api::hooks::HookSoftConfirmationInfo;
 use sov_modules_api::prelude::*;
 use sov_modules_api::{AccessoryWorkingSet, Spec, WorkingSet};
+use sov_rollup_interface::spec::SpecId as CitreaSpecId;
 use sov_state::Storage;
 #[cfg(feature = "native")]
 use tracing::instrument;
@@ -249,7 +250,11 @@ where
         {
             use crate::PendingTransaction;
             let mut accessory_state = working_set.accessory_state();
-            self.pending_head.set(&block, &mut accessory_state);
+            if soft_confirmation_info.current_spec >= CitreaSpecId::Fork1 {
+                self.pending_head_rlp.set(&block, &mut accessory_state);
+            } else {
+                self.pending_head.set(&block, &mut accessory_state);
+            }
 
             let mut tx_index = start_tx_index;
             for PendingTransaction {

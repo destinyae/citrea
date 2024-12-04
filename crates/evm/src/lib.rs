@@ -37,7 +37,7 @@ use revm::primitives::{BlockEnv, U256};
 #[cfg(feature = "native")]
 use sov_modules_api::{AccessoryWorkingSet, StateVecAccessor};
 use sov_modules_api::{Error, ModuleInfo, SpecId as CitreaSpecId, WorkingSet};
-use sov_state::codec::BcsCodec;
+use sov_state::codec::{BcsCodec, RlpCodec};
 
 #[cfg(feature = "native")]
 use crate::evm::primitive_types::SealedBlock;
@@ -142,10 +142,17 @@ pub struct Evm<C: sov_modules_api::Context> {
     #[state]
     pub(crate) pending_head: sov_modules_api::AccessoryStateValue<Block, BcsCodec>,
 
+    #[cfg(feature = "native")]
+    #[state]
+    pub(crate) pending_head_rlp: sov_modules_api::AccessoryStateValue<Block, RlpCodec>,
+
     /// Used only by the RPC: The vec is extended with `pending_head` in `finalize_hook`.
     #[cfg(feature = "native")]
     #[state]
     pub(crate) blocks: sov_modules_api::AccessoryStateVec<SealedBlock, BcsCodec>,
+    #[cfg(feature = "native")]
+    #[state]
+    pub(crate) blocks_rlp: sov_modules_api::AccessoryStateVec<SealedBlock, RlpCodec>,
 
     /// Used only by the RPC: block_hash => block_number mapping,
     #[cfg(feature = "native")]
