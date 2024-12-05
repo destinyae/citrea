@@ -1,6 +1,7 @@
 use std::collections::BTreeMap;
 use std::ops::{Range, RangeInclusive};
 
+use alloy_consensus::constants::KECCAK_EMPTY;
 use alloy_consensus::Eip658Value;
 use alloy_eips::eip2930::AccessListWithGasUsed;
 use alloy_primitives::Uint;
@@ -33,6 +34,7 @@ use sov_modules_api::fork::fork_from_block_number;
 use sov_modules_api::macros::rpc_gen;
 use sov_modules_api::prelude::*;
 use sov_modules_api::WorkingSet;
+use sov_state::storage::NativeStorage;
 
 use crate::call::get_cfg_env;
 use crate::conversions::{create_tx_env, sealed_block_to_block_env};
@@ -1165,6 +1167,53 @@ impl<C: sov_modules_api::Context> Evm<C> {
         });
 
         Ok(transaction)
+    }
+
+    /// Handler for: `eth_getStorageAt`
+    #[rpc_method(name = "eth_getProof")]
+    pub fn get_proof(
+        &self,
+        address: reth_primitives::Address,
+        keys: Vec<reth_primitives::U256>,
+        block_id: Option<BlockId>,
+        working_set: &mut WorkingSet<C>,
+    ) -> RpcResult<reth_rpc_types::EIP1186AccountProofResponse>
+    where
+        C::Storage: NativeStorage,
+    {
+        use sov_state::storage::{StateCodec, StorageKey};
+
+        self.set_state_to_end_of_evm_block_by_block_id(block_id, working_set)?;
+
+        let account = self.accounts.get(&address, working_set).unwrap_or_default();
+        let balance = account.balance;
+        let nonce = account.nonce;
+        let code_hash = account.code_hash.unwrap_or(KECCAK_EMPTY);
+
+        let account_key = StorageKey::new(
+            self.accounts.prefix(),
+            &address,
+            self.accounts.codec().key_codec(),
+        );
+        let account_proof = working_set.get_with_proof(account_key);
+
+        let db_account = DbAccount::new(address);
+        for key in keys {
+            let storage_key = StorageKey::new(
+                db_account.storage.prefix(),
+                &address,
+                db_account.storage.codec().key_codec(),
+            );
+            let value_proof = working_set.get_with_proof(storage_key);
+        }
+
+        Ok(reth_rpc_types::EIP1186AccountProofResponse {
+            address,
+            balance,
+            nonce,
+            code_hash,
+            ..Default::default()
+        })
     }
 
     /// Traces the entire block txs and returns the traces
