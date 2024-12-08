@@ -2,16 +2,19 @@ use std::sync::{Arc, Mutex};
 
 #[cfg(feature = "local")]
 use citrea_evm::DevSigner;
-use citrea_evm::Evm;
-use reth_primitives::U256;
+use citrea_evm::{DbAccount, Evm};
+use jsonrpsee::types::ErrorObjectOwned;
+use reth_primitives::{Address, KECCAK_EMPTY, U256};
 use reth_rpc_types::trace::geth::GethTrace;
+use reth_rpc_types::BlockId;
 use rustc_version_runtime::version;
 use schnellru::{ByLength, LruMap};
 use sequencer_client::SequencerClient;
 use sov_db::ledger_db::LedgerDB;
-use sov_modules_api::WorkingSet;
+use sov_modules_api::{StateMapAccessor, WorkingSet};
 use sov_rollup_interface::services::da::DaService;
 use sov_rollup_interface::CITREA_VERSION;
+use sov_state::storage::NativeStorage;
 use tokio::sync::broadcast;
 use tracing::instrument;
 
@@ -44,7 +47,10 @@ pub struct Ethereum<C: sov_modules_api::Context, Da: DaService> {
     pub(crate) subscription_manager: Option<SubscriptionManager>,
 }
 
-impl<C: sov_modules_api::Context, Da: DaService> Ethereum<C, Da> {
+impl<C: sov_modules_api::Context, Da: DaService> Ethereum<C, Da>
+where
+    C::Storage: NativeStorage,
+{
     #[allow(clippy::too_many_arguments)]
     pub(crate) fn new(
         da_service: Arc<Da>,
@@ -100,6 +106,49 @@ impl<C: sov_modules_api::Context, Da: DaService> Ethereum<C, Da> {
         // not make a difference to price, but also allows bumping tip
         // of EIP-1559 transactions in times of congestion.
         (U256::from(base_fee), DEFAULT_PRIORITY_FEE)
+    }
+
+    pub fn get_proof(
+        &self,
+        address: Address,
+        keys: Vec<U256>,
+        block_id: Option<BlockId>,
+        working_set: &mut WorkingSet<C::Storage>,
+    ) -> Result<reth_rpc_types::EIP1186AccountProofResponse, ErrorObjectOwned> {
+        use sov_state::storage::{StateCodec, StorageKey};
+
+        let evm = Evm::<C>::default();
+        evm.set_state_to_end_of_evm_block_by_block_id(block_id, working_set)?;
+
+        let account = evm.accounts.get(&address, working_set).unwrap_or_default();
+        let balance = account.balance;
+        let nonce = account.nonce;
+        let code_hash = account.code_hash.unwrap_or(KECCAK_EMPTY);
+
+        let account_key = StorageKey::new(
+            evm.accounts.prefix(),
+            &address,
+            evm.accounts.codec().key_codec(),
+        );
+        let account_proof = working_set.get_with_proof(account_key);
+
+        let db_account = DbAccount::new(address);
+        for key in keys {
+            let storage_key = StorageKey::new(
+                db_account.storage.prefix(),
+                &key,
+                db_account.storage.codec().key_codec(),
+            );
+            let value_proof = working_set.get_with_proof(storage_key);
+        }
+
+        Ok(reth_rpc_types::EIP1186AccountProofResponse {
+            address,
+            balance,
+            nonce,
+            code_hash,
+            ..Default::default()
+        })
     }
 
     //     fn make_raw_tx(

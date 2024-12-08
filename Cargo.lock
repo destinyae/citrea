@@ -2841,6 +2841,7 @@ dependencies = [
  "sov-db",
  "sov-modules-api",
  "sov-rollup-interface",
+ "sov-state",
  "tokio",
  "tracing",
 ]

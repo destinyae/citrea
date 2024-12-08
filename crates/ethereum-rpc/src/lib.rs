@@ -24,6 +24,7 @@ use sov_modules_api::da::BlockHeaderTrait;
 use sov_modules_api::utils::to_jsonrpsee_error_object;
 use sov_modules_api::WorkingSet;
 use sov_rollup_interface::services::da::DaService;
+use sov_state::storage::NativeStorage;
 use tokio::join;
 use tokio::sync::broadcast;
 use trace::{debug_trace_by_block_number, handle_debug_trace_chain};
@@ -53,7 +54,10 @@ pub fn get_ethereum_rpc<C: sov_modules_api::Context, Da: DaService>(
     ledger_db: LedgerDB,
     sequencer_client_url: Option<String>,
     soft_confirmation_rx: Option<broadcast::Receiver<u64>>,
-) -> RpcModule<Ethereum<C, Da>> {
+) -> RpcModule<Ethereum<C, Da>>
+where
+    C::Storage: NativeStorage,
+{
     // Unpack config
     let EthRpcConfig {
         #[cfg(feature = "local")]
@@ -89,7 +93,10 @@ fn register_rpc_methods<C: sov_modules_api::Context, Da: DaService>(
     // Checks wether the running node is a sequencer or not, if it is not a sequencer it should also have methods like eth_sendRawTransaction here.
     is_sequencer: bool,
     enable_subscriptions: bool,
-) -> Result<(), jsonrpsee::core::RegisterMethodError> {
+) -> Result<(), jsonrpsee::core::RegisterMethodError>
+where
+    C::Storage: NativeStorage,
+{
     rpc.register_async_method("web3_clientVersion", |_, ethereum, _| async move {
         Ok::<_, ErrorObjectOwned>(ethereum.web3_client_version.clone())
     })?;
