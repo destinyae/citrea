@@ -4,9 +4,9 @@ use std::sync::{Arc, Mutex};
 use citrea_evm::DevSigner;
 use citrea_evm::{DbAccount, Evm};
 use jsonrpsee::types::ErrorObjectOwned;
-use reth_primitives::{Address, KECCAK_EMPTY, U256};
+use reth_primitives::{Address, Bytes, KECCAK_EMPTY, U256};
 use reth_rpc_types::trace::geth::GethTrace;
-use reth_rpc_types::BlockId;
+use reth_rpc_types::{BlockId, EIP1186StorageProof, JsonStorageKey};
 use rustc_version_runtime::version;
 use schnellru::{ByLength, LruMap};
 use sequencer_client::SequencerClient;
@@ -131,15 +131,26 @@ where
             evm.accounts.codec().key_codec(),
         );
         let account_proof = working_set.get_with_proof(account_key);
+        let account_proof = borsh::to_vec(&account_proof).expect("Serialization shouldn't fail");
+        let account_proof = Bytes::from(account_proof);
 
         let db_account = DbAccount::new(address);
+        let mut storage_proof = vec![];
         for key in keys {
             let storage_key = StorageKey::new(
                 db_account.storage.prefix(),
                 &key,
                 db_account.storage.codec().key_codec(),
             );
-            let value_proof = working_set.get_with_proof(storage_key);
+            let value = db_account.storage.get(&key, working_set);
+            let proof = working_set.get_with_proof(storage_key);
+            let value_proof = borsh::to_vec(&proof.proof).expect("Serialization shouldn't fail");
+            let value_proof = Bytes::from(value_proof);
+            storage_proof.push(EIP1186StorageProof {
+                key: JsonStorageKey(key.into()),
+                value: value.unwrap_or_default(),
+                proof: vec![value_proof],
+            });
         }
 
         Ok(reth_rpc_types::EIP1186AccountProofResponse {
@@ -147,7 +158,9 @@ where
             balance,
             nonce,
             code_hash,
-            ..Default::default()
+            storage_hash: Default::default(),
+            account_proof: vec![account_proof],
+            storage_proof,
         })
     }
 
