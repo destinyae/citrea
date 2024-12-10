@@ -16,7 +16,7 @@ use jsonrpsee::RpcModule;
 use reth_primitives::{keccak256, Address, BlockNumberOrTag, Bytes, B256, U256};
 use reth_rpc_eth_types::EthApiError;
 use reth_rpc_types::trace::geth::{GethDebugTracingOptions, GethTrace};
-use reth_rpc_types::{BlockId, FeeHistory, Index};
+use reth_rpc_types::{BlockId, FeeHistory, Index, JsonStorageKey};
 use sequencer_client::SequencerClient;
 use serde_json::json;
 use sov_db::ledger_db::{LedgerDB, SharedLedgerOps};
@@ -173,8 +173,16 @@ where
         let mut params = params.sequence();
 
         let address: Address = params.next()?;
-        let keys: Vec<U256> = params.next()?;
+        let keys: Vec<JsonStorageKey> = params.next()?;
         let block_id: Option<BlockId> = params.optional_next()?;
+
+        let keys = keys
+            .into_iter()
+            .map(|k| {
+                // TODO: cast with .as_b256() while upgrading alloy
+                k.0.into()
+            })
+            .collect();
 
         let mut working_set = WorkingSet::new(ethereum.storage.clone());
 
