@@ -307,6 +307,8 @@ impl From<&str> for StorageValue {
 /// A [`Storage`] that is suitable for use in native execution environments
 /// (outside of the zkVM).
 pub trait NativeStorage: Storage {
+    /// Return current version (0 if empty).
+    fn version(&self) -> u64;
     /// Returns the value corresponding to the key or None if key is absent and a proof to
     /// get the value.
     fn get_with_proof(&self, key: StorageKey) -> StorageProof;

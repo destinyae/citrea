@@ -120,13 +120,9 @@ where
 
         let evm = Evm::<C>::default();
         evm.set_state_to_end_of_evm_block_by_block_id(block_id, working_set)?;
-        let block_id: u64 = evm
-            .block_number(working_set)?
-            .try_into()
-            .map_err(|_| EthApiError::UnknownBlockNumber)?;
 
         let root_hash = working_set
-            .get_root_hash(block_id)
+            .get_root_hash()
             .map_err(|_| EthApiError::UnknownBlockNumber)?;
 
         let account = evm.accounts.get(&address, working_set).unwrap_or_default();

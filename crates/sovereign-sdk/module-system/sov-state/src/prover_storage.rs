@@ -94,7 +94,7 @@ where
         version: Option<Version>,
         witness: &mut Self::Witness,
     ) -> Option<StorageValue> {
-        let version_to_use = version.unwrap_or_else(|| self.db.get_next_version() - 1);
+        let version_to_use = version.unwrap_or_else(|| self.version());
         let val = self
             .native_db
             .get_value_option(key.as_ref(), version_to_use)
@@ -106,7 +106,7 @@ where
 
     #[cfg(feature = "native")]
     fn get_accessory(&self, key: &StorageKey, version: Option<Version>) -> Option<StorageValue> {
-        let version_to_use = version.unwrap_or_else(|| self.db.get_next_version() - 1);
+        let version_to_use = version.unwrap_or_else(|| self.version());
         self.native_db
             .get_value_option(key.as_ref(), version_to_use)
             .unwrap()
@@ -125,7 +125,7 @@ where
         ),
         anyhow::Error,
     > {
-        let latest_version = self.db.get_next_version() - 1;
+        let latest_version = self.version();
         let jmt = JellyfishMerkleTree::<_, DefaultHasher>::new(&self.db);
 
         // Handle empty jmt
@@ -212,7 +212,7 @@ where
         accessory_writes: &OrderedReadsAndWrites,
         offchain_writes: &OrderedReadsAndWrites,
     ) {
-        let latest_version = self.db.get_next_version() - 1;
+        let latest_version = self.version();
         self.db
             .put_preimages(
                 state_update
@@ -274,13 +274,13 @@ impl<Q> NativeStorage for ProverStorage<Q>
 where
     Q: QueryManager,
 {
+    fn version(&self) -> u64 {
+        self.db.get_next_version().saturating_sub(1)
+    }
     fn get_with_proof(&self, key: StorageKey) -> StorageProof {
         let merkle = JellyfishMerkleTree::<StateDB<Q>, DefaultHasher>::new(&self.db);
         let (val_opt, proof) = merkle
-            .get_with_proof(
-                KeyHash::with::<DefaultHasher>(key.as_ref()),
-                self.db.get_next_version() - 1,
-            )
+            .get_with_proof(KeyHash::with::<DefaultHasher>(key.as_ref()), self.version())
             .unwrap();
         StorageProof {
             key,
