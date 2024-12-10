@@ -11,7 +11,8 @@ use crate::archival_state::{ArchivalAccessoryWorkingSet, ArchivalJmtWorkingSet};
 use crate::common::Prefix;
 use crate::storage::{
     CacheKey, CacheValue, EncodeKeyLike, NativeStorage, OrderedReadsAndWrites, StateCodec,
-    StateValueCodec, Storage, StorageInternalCache, StorageKey, StorageProof, StorageValue,
+    StateValueCodec, Storage, StorageInternalCache, StorageKey, StorageProof, StorageRootHash,
+    StorageValue,
 };
 use crate::Version;
 
@@ -526,6 +527,15 @@ impl<S: Storage> WorkingSet<S> {
     {
         // First inner is `RevertableWriter` and second inner is actually a `Storage` instance
         self.delta.inner.inner.get_with_proof(key)
+    }
+
+    /// Get the root hash of the tree at the requested version.
+    pub fn get_root_hash(&mut self, version: Version) -> Result<StorageRootHash, anyhow::Error>
+    where
+        S: NativeStorage,
+    {
+        // First inner is `RevertableWriter` and second inner is actually a `Storage` instance
+        self.delta.inner.inner.get_root_hash(version)
     }
 }
 

@@ -5,6 +5,7 @@ use citrea_evm::DevSigner;
 use citrea_evm::{DbAccount, Evm};
 use jsonrpsee::types::ErrorObjectOwned;
 use reth_primitives::{Address, Bytes, KECCAK_EMPTY, U256};
+use reth_rpc_eth_types::EthApiError;
 use reth_rpc_types::trace::geth::GethTrace;
 use reth_rpc_types::{BlockId, EIP1186StorageProof, JsonStorageKey};
 use rustc_version_runtime::version;
@@ -119,6 +120,14 @@ where
 
         let evm = Evm::<C>::default();
         evm.set_state_to_end_of_evm_block_by_block_id(block_id, working_set)?;
+        let block_id: u64 = evm
+            .block_number(working_set)?
+            .try_into()
+            .map_err(|_| EthApiError::UnknownBlockNumber)?;
+
+        let root_hash = working_set
+            .get_root_hash(block_id)
+            .map_err(|_| EthApiError::UnknownBlockNumber)?;
 
         let account = evm.accounts.get(&address, working_set).unwrap_or_default();
         let balance = account.balance;
@@ -158,7 +167,7 @@ where
             balance,
             nonce,
             code_hash,
-            storage_hash: Default::default(),
+            storage_hash: root_hash.0.into(),
             account_proof: vec![account_proof],
             storage_proof,
         })
