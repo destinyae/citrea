@@ -1,6 +1,6 @@
 use borsh::{BorshDeserialize, BorshSerialize};
 use serde::{Deserialize, Serialize};
-use sov_modules_core::{AccessoryWorkingSet, Context, Spec, Storage, WorkingSet};
+use sov_modules_core::{AccessoryWorkingSet, Context, Spec, StorageRootHash, WorkingSet};
 use sov_rollup_interface::da::DaSpec;
 use sov_rollup_interface::soft_confirmation::SignedSoftConfirmation;
 use sov_rollup_interface::spec::SpecId;
@@ -162,7 +162,7 @@ pub trait SlotHooks<Da: DaSpec> {
     fn begin_slot_hook(
         &self,
         slot_header: &Da::BlockHeader,
-        pre_state_root: &<<Self::Context as Spec>::Storage as Storage>::Root,
+        pre_state_root: &StorageRootHash,
         working_set: &mut WorkingSet<<Self::Context as Spec>::Storage>,
     );
 
@@ -174,7 +174,7 @@ pub trait FinalizeHook<Da: DaSpec> {
 
     fn finalize_hook(
         &self,
-        root_hash: &<<Self::Context as Spec>::Storage as Storage>::Root,
+        root_hash: &StorageRootHash,
         accessory_working_set: &mut AccessoryWorkingSet<<Self::Context as Spec>::Storage>,
     );
 }

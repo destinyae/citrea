@@ -4,7 +4,6 @@ use alloc::vec::Vec;
 use core::fmt;
 
 use borsh::{BorshDeserialize, BorshSerialize};
-use serde::de::DeserializeOwned;
 use serde::Serialize;
 use sov_rollup_interface::stf::{StateDiff, StateRootTransition};
 use sov_rollup_interface::RefCount;
@@ -167,14 +166,17 @@ impl StorageValue {
     derive(Serialize, serde::Deserialize, BorshDeserialize, BorshSerialize)
 )]
 /// A proof that a particular storage key has a particular value, or is absent.
-pub struct StorageProof<P> {
+pub struct StorageProof {
     /// The key which is proven
     pub key: StorageKey,
     /// The value, if any, which is proven
     pub value: Option<StorageValue>,
     /// The cryptographic proof
-    pub proof: P,
+    pub proof: jmt::proof::SparseMerkleProof<sha2::Sha256>,
 }
+
+/// A cryptographic commitment to the contents of this storage
+pub type StorageRootHash = jmt::RootHash;
 
 /// An interface for storing and retrieving values in the storage.
 pub trait Storage: Clone {
@@ -183,28 +185,6 @@ pub trait Storage: Clone {
 
     /// The runtime config for this storage instance.
     type RuntimeConfig;
-
-    /// A cryptographic proof that a particular key has a particular value, or is absent.
-    type Proof: Serialize
-        + DeserializeOwned
-        + fmt::Debug
-        + Clone
-        + BorshSerialize
-        + BorshDeserialize;
-
-    /// A cryptographic commitment to the contents of this storage
-    type Root: Serialize
-        + DeserializeOwned
-        + fmt::Debug
-        + Clone
-        + BorshSerialize
-        + BorshDeserialize
-        + Eq
-        + Send
-        + Sync
-        + AsRef<[u8]>
-        + Into<[u8; 32]>; // Require a one-way conversion from the state root to a 32-byte array. This can always be
-                          // implemented by hashing the state root even if the root itself is not 32 bytes.
 
     /// State update that will be committed to the database.
     type StateUpdate;
@@ -246,7 +226,7 @@ pub trait Storage: Clone {
         witness: &mut Self::Witness,
     ) -> Result<
         (
-            StateRootTransition<Self::Root>,
+            StateRootTransition<StorageRootHash>,
             Self::StateUpdate,
             StateDiff, // computed in Zk mode
         ),
@@ -268,7 +248,7 @@ pub trait Storage: Clone {
         witness: &mut Self::Witness,
         accessory_update: &OrderedReadsAndWrites,
         offchain_update: &OrderedReadsAndWrites,
-    ) -> Result<Self::Root, anyhow::Error> {
+    ) -> Result<StorageRootHash, anyhow::Error> {
         let (state_root_transition, node_batch, _) =
             self.compute_state_update(state_accesses, witness)?;
         self.commit(&node_batch, accessory_update, offchain_update);
@@ -284,7 +264,7 @@ pub trait Storage: Clone {
         &self,
         state_accesses: OrderedReadsAndWrites,
         witness: &mut Self::Witness,
-    ) -> Result<Self::Root, anyhow::Error> {
+    ) -> Result<StorageRootHash, anyhow::Error> {
         Self::validate_and_commit_with_accessory_update(
             self,
             state_accesses,
@@ -297,8 +277,8 @@ pub trait Storage: Clone {
     /// Opens a storage access proof and validates it against a state root.
     /// It returns a result with the opened leaf (key, value) pair in case of success.
     fn open_proof(
-        state_root: Self::Root,
-        proof: StorageProof<Self::Proof>,
+        state_root: StorageRootHash,
+        proof: StorageProof,
     ) -> Result<(StorageKey, Option<StorageValue>), anyhow::Error>;
 
     /// Indicates if storage is empty or not.
@@ -329,8 +309,8 @@ impl From<&str> for StorageValue {
 pub trait NativeStorage: Storage {
     /// Returns the value corresponding to the key or None if key is absent and a proof to
     /// get the value.
-    fn get_with_proof(&self, key: StorageKey) -> StorageProof<Self::Proof>;
+    fn get_with_proof(&self, key: StorageKey) -> StorageProof;
 
     /// Get the root hash of the tree at the requested version
-    fn get_root_hash(&self, version: Version) -> Result<Self::Root, anyhow::Error>;
+    fn get_root_hash(&self, version: Version) -> Result<StorageRootHash, anyhow::Error>;
 }

@@ -520,7 +520,7 @@ impl<S: Storage> WorkingSet<S> {
     }
 
     /// Fetches given value and provides a proof of it presence/absence.
-    pub fn get_with_proof(&mut self, key: StorageKey) -> StorageProof<<S as Storage>::Proof>
+    pub fn get_with_proof(&mut self, key: StorageKey) -> StorageProof
     where
         S: NativeStorage,
     {

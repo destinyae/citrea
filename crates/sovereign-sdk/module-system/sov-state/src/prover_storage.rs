@@ -7,7 +7,7 @@ use sov_db::schema::{QueryManager, ReadOnlyDbSnapshot};
 use sov_db::state_db::StateDB;
 use sov_modules_core::{
     CacheKey, NativeStorage, OrderedReadsAndWrites, Storage, StorageKey, StorageProof,
-    StorageValue, Witness,
+    StorageRootHash, StorageValue, Witness,
 };
 use sov_rollup_interface::stf::{StateDiff, StateRootTransition};
 
@@ -75,8 +75,6 @@ where
 {
     type Witness = DefaultWitness;
     type RuntimeConfig = Config;
-    type Proof = jmt::proof::SparseMerkleProof<DefaultHasher>;
-    type Root = jmt::RootHash;
     type StateUpdate = ProverStateUpdate;
 
     fn get(
@@ -121,7 +119,7 @@ where
         witness: &mut Self::Witness,
     ) -> Result<
         (
-            StateRootTransition<Self::Root>,
+            StateRootTransition<StorageRootHash>,
             Self::StateUpdate,
             StateDiff,
         ),
@@ -256,8 +254,8 @@ where
     }
 
     fn open_proof(
-        state_root: Self::Root,
-        state_proof: StorageProof<Self::Proof>,
+        state_root: StorageRootHash,
+        state_proof: StorageProof,
     ) -> Result<(StorageKey, Option<StorageValue>), anyhow::Error> {
         let StorageProof { key, value, proof } = state_proof;
         let key_hash = KeyHash::with::<DefaultHasher>(key.as_ref());
@@ -276,7 +274,7 @@ impl<Q> NativeStorage for ProverStorage<Q>
 where
     Q: QueryManager,
 {
-    fn get_with_proof(&self, key: StorageKey) -> StorageProof<Self::Proof> {
+    fn get_with_proof(&self, key: StorageKey) -> StorageProof {
         let merkle = JellyfishMerkleTree::<StateDB<Q>, DefaultHasher>::new(&self.db);
         let (val_opt, proof) = merkle
             .get_with_proof(
