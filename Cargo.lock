@@ -1730,6 +1730,7 @@ dependencies = [
  "lazy_static",
  "log",
  "log-panics",
+ "metrics 0.24.1",
  "proptest",
  "prover-services",
  "regex",
@@ -4230,7 +4231,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4979f22fdb869068da03c9f7528f8297c6fd2606bc3a4affe42e6a823fdb8da4"
 dependencies = [
  "cfg-if",
- "windows-targets 0.48.5",
+ "windows-targets 0.52.6",
 ]
 
 [[package]]
@@ -4429,6 +4430,16 @@ name = "metrics"
 version = "0.23.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "884adb57038347dfbaf2d5065887b6cf4312330dc8e94bc30a1a839bd79d3261"
+dependencies = [
+ "ahash",
+ "portable-atomic",
+]
+
+[[package]]
+name = "metrics"
+version = "0.24.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7a7deb012b3b2767169ff203fadb4c6b0b82b947512e5eb9e0b78c2e186ad9e3"
 dependencies = [
  "ahash",
  "portable-atomic",
@@ -5478,7 +5489,7 @@ source = "git+https://github.com/paradigmxyz/reth?rev=a206eb3690e5a51d3c797fed2a
 dependencies = [
  "auto_impl",
  "derive_more",
- "metrics",
+ "metrics 0.23.0",
  "parking_lot",
  "pin-project",
  "reth-chainspec",
@@ -5568,7 +5579,7 @@ dependencies = [
  "bytes",
  "derive_more",
  "eyre",
- "metrics",
+ "metrics 0.23.0",
  "page_size",
  "paste",
  "reth-db-api",
@@ -5597,7 +5608,7 @@ source = "git+https://github.com/paradigmxyz/reth?rev=a206eb3690e5a51d3c797fed2a
 dependencies = [
  "bytes",
  "derive_more",
- "metrics",
+ "metrics 0.23.0",
  "modular-bitfield",
  "parity-scale-codec",
  "reth-codecs",
@@ -5741,7 +5752,7 @@ name = "reth-metrics"
 version = "1.0.4"
 source = "git+https://github.com/paradigmxyz/reth?rev=a206eb3690e5a51d3c797fed2a6ed722e36863eb#a206eb3690e5a51d3c797fed2a6ed722e36863eb"
 dependencies = [
- "metrics",
+ "metrics 0.23.0",
  "reth-metrics-derive",
 ]
 
@@ -5909,7 +5920,7 @@ dependencies = [
  "auto_impl",
  "dashmap 6.1.0",
  "itertools 0.13.0",
- "metrics",
+ "metrics 0.23.0",
  "parking_lot",
  "rayon",
  "reth-blockchain-tree-api",
@@ -5978,7 +5989,7 @@ dependencies = [
  "futures",
  "jsonrpsee-core",
  "jsonrpsee-types",
- "metrics",
+ "metrics 0.23.0",
  "rand 0.8.5",
  "reth-chain-state",
  "reth-chainspec",
@@ -6112,7 +6123,7 @@ dependencies = [
  "auto_impl",
  "dyn-clone",
  "futures-util",
- "metrics",
+ "metrics 0.23.0",
  "reth-metrics",
  "thiserror",
  "tokio",
@@ -6155,7 +6166,7 @@ dependencies = [
  "auto_impl",
  "bitflags 2.6.0",
  "futures-util",
- "metrics",
+ "metrics 0.23.0",
  "parking_lot",
  "reth-chain-state",
  "reth-chainspec",
@@ -6186,7 +6197,7 @@ dependencies = [
  "auto_impl",
  "derive_more",
  "itertools 0.13.0",
- "metrics",
+ "metrics 0.23.0",
  "rayon",
  "reth-execution-errors",
  "reth-metrics",
@@ -6227,7 +6238,7 @@ dependencies = [
  "auto_impl",
  "derive_more",
  "itertools 0.13.0",
- "metrics",
+ "metrics 0.23.0",
  "rayon",
  "reth-db",
  "reth-db-api",
