@@ -86,7 +86,8 @@ log-panics = { version = "2", features = ["with-backtrace"] }
 once_cell = { version = "1.19.0", default-features = false, features = ["alloc"] }
 metrics = { version = "0.24.1" }
 metrics-derive = { version = "0.1.0" }
-metrics-prometheus = { version = "0.8.0" }
+metrics-exporter-prometheus = { version = "0.8.0" }
+metrics-util = { version = "0.11.1" }
 num_cpus = "1.0"
 parking_lot = { version = "0.12.3" }
 proptest = { version = "1.3.1", default-features = false, features = ["alloc"] }
