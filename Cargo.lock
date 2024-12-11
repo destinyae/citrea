@@ -4446,6 +4446,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "metrics-derive"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f3dbdd96ed57d565ec744cba02862d707acf373c5772d152abae6ec5c4e24f6c"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "regex",
+ "syn 2.0.87",
+]
+
+[[package]]
 name = "mime"
 version = "0.3.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -7640,6 +7652,8 @@ version = "0.5.0-rc.1"
 dependencies = [
  "anyhow",
  "byteorder",
+ "metrics 0.24.1",
+ "metrics-derive",
  "once_cell",
  "proptest",
  "proptest-derive",

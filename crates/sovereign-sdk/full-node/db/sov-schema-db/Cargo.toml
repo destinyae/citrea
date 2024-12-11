@@ -16,6 +16,8 @@ readme = "README.md"
 # External dependencies
 anyhow = { workspace = true, default-features = true }
 byteorder = { workspace = true, default-features = true, optional = true }
+metrics = { workspace = true }
+metrics-derive = { workspace = true }
 once_cell = { workspace = true, default-features = true }
 proptest = { workspace = true, optional = true, default-features = true }
 proptest-derive = { workspace = true, optional = true }
