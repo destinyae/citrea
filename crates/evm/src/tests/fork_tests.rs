@@ -1,4 +1,5 @@
 use std::str::FromStr;
+use std::thread::sleep;
 
 use reth_primitives::{address, keccak256, Address, Bytes, TxKind};
 use revm::primitives::U256;
@@ -13,7 +14,7 @@ use crate::call::CallMessage;
 use crate::evm::DbAccount;
 use crate::smart_contracts::{
     BlobBaseFeeContract, KZGPointEvaluationContract, McopyContract,
-    SelfdestructingConstructorContract, TransientStorageContract,
+    SelfdestructingConstructorContract, SimpleStorageContract, TransientStorageContract,
 };
 use crate::tests::test_signer::TestSigner;
 use crate::tests::utils::{create_contract_message, get_evm, get_evm_config};
@@ -656,4 +657,150 @@ fn test_kzg_point_eval_should_revert() {
         .collect();
 
     assert!(!receipts.last().unwrap().receipt.success);
+}
+
+#[test]
+fn test_offchain_contract_storage_evm() {
+    let (config, dev_signer, contract_addr) =
+        get_evm_config(U256::from_str("100000000000000000000").unwrap(), None);
+
+    let (mut evm, mut working_set) = get_evm(&config);
+    let l1_fee_rate = 0;
+    let mut l2_height = 2;
+
+    // Deployed a contract in genesis fork
+    let soft_confirmation_info = HookSoftConfirmationInfo {
+        l2_height,
+        da_slot_hash: [5u8; 32],
+        da_slot_height: 1,
+        da_slot_txs_commitment: [42u8; 32],
+        pre_state_root: [10u8; 32].to_vec(),
+        current_spec: SovSpecId::Genesis,
+        pub_key: vec![],
+        deposit_data: vec![],
+        l1_fee_rate,
+        timestamp: 0,
+    };
+
+    // Deploy transient storage contract
+    let sender_address = generate_address::<C>("sender");
+    evm.begin_soft_confirmation_hook(&soft_confirmation_info, &mut working_set);
+    {
+        let context = C::new(sender_address, l2_height, SovSpecId::Genesis, l1_fee_rate);
+
+        let deploy_message =
+            create_contract_message(&dev_signer, 0, KZGPointEvaluationContract::default());
+
+        evm.call(
+            CallMessage {
+                txs: vec![deploy_message],
+            },
+            &context,
+            &mut working_set,
+        )
+        .unwrap();
+    }
+    evm.end_soft_confirmation_hook(&soft_confirmation_info, &mut working_set);
+    evm.finalize_hook(&[99u8; 32].into(), &mut working_set.accessory_state());
+
+    l2_height += 1;
+
+    sleep(std::time::Duration::from_secs(2));
+
+    //try to get it from offchain storage and expect it to not exist
+    let contract_info = evm.accounts.get(&contract_addr, &mut working_set);
+    let code_hash = contract_info.unwrap().code_hash.unwrap();
+
+    let offchain_code = evm
+        .offchain_code
+        .get(&code_hash, &mut working_set.offchain_state());
+
+    assert!(offchain_code.is_none());
+
+    // activate fork and then try to get it from offchain storage and expect it to exist
+    // Deployed a contract in genesis fork
+    let soft_confirmation_info = HookSoftConfirmationInfo {
+        l2_height,
+        da_slot_hash: [5u8; 32],
+        da_slot_height: 1,
+        da_slot_txs_commitment: [42u8; 32],
+        pre_state_root: [10u8; 32].to_vec(),
+        current_spec: SovSpecId::Fork1,
+        pub_key: vec![],
+        deposit_data: vec![],
+        l1_fee_rate,
+        timestamp: 0,
+    };
+    evm.begin_soft_confirmation_hook(&soft_confirmation_info, &mut working_set);
+    evm.end_soft_confirmation_hook(&soft_confirmation_info, &mut working_set);
+    evm.finalize_hook(&[99u8; 32].into(), &mut working_set.accessory_state());
+    sleep(std::time::Duration::from_secs(2));
+    l2_height += 1;
+
+    let offchain_code = evm
+        .offchain_code
+        .get(&code_hash, &mut working_set.offchain_state());
+
+    assert!(offchain_code.is_none());
+
+    let evm_code = evm.code.get(&code_hash, &mut working_set).unwrap();
+
+    let code = evm
+        .get_code(
+            contract_addr,
+            Some(alloy_eips::BlockId::Number(
+                alloy_eips::BlockNumberOrTag::Latest,
+            )),
+            &mut working_set,
+        )
+        .unwrap();
+
+    assert_eq!(code, evm_code.original_bytes());
+
+    // Deploy contract in fork1
+    evm.begin_soft_confirmation_hook(&soft_confirmation_info, &mut working_set);
+    {
+        let context = C::new(sender_address, l2_height, SovSpecId::Fork1, l1_fee_rate);
+
+        let deploy_message =
+            create_contract_message(&dev_signer, 1, SimpleStorageContract::default());
+
+        evm.call(
+            CallMessage {
+                txs: vec![deploy_message],
+            },
+            &context,
+            &mut working_set,
+        )
+        .unwrap();
+        sleep(std::time::Duration::from_secs(2));
+    }
+    evm.end_soft_confirmation_hook(&soft_confirmation_info, &mut working_set);
+    evm.finalize_hook(&[99u8; 32].into(), &mut working_set.accessory_state());
+
+    let new_contract_address = address!("d26ff5586e488e65d86bcc3f0fe31551e381a596");
+
+    let contract_info = evm.accounts.get(&new_contract_address, &mut working_set);
+    let code_hash = contract_info.unwrap().code_hash.unwrap();
+
+    let offchain_code = evm
+        .offchain_code
+        .get(&code_hash, &mut working_set.offchain_state());
+
+    assert!(offchain_code.is_some());
+
+    let evm_code = evm.code.get(&code_hash, &mut working_set);
+    assert!(evm_code.is_none());
+
+    let code = evm
+        .get_code(
+            new_contract_address,
+            Some(alloy_eips::BlockId::Number(
+                alloy_eips::BlockNumberOrTag::Latest,
+            )),
+            &mut working_set,
+        )
+        .unwrap();
+
+    assert_eq!(offchain_code.unwrap().original_bytes(), code);
 }
