@@ -1,7 +1,8 @@
 use std::str::FromStr;
 
-use reth_primitives::{address, keccak256, Address, TxKind};
+use reth_primitives::{address, keccak256, Address, Bytes, TxKind};
 use revm::primitives::U256;
+use sha2::Digest;
 use sov_modules_api::default_context::DefaultContext;
 use sov_modules_api::hooks::HookSoftConfirmationInfo;
 use sov_modules_api::utils::generate_address;
@@ -11,8 +12,8 @@ use sov_rollup_interface::spec::SpecId as SovSpecId;
 use crate::call::CallMessage;
 use crate::evm::DbAccount;
 use crate::smart_contracts::{
-    BlobBaseFeeContract, McopyContract, SelfdestructingConstructorContract,
-    TransientStorageContract,
+    BlobBaseFeeContract, KZGPointEvaluationContract, McopyContract,
+    SelfdestructingConstructorContract, TransientStorageContract,
 };
 use crate::tests::test_signer::TestSigner;
 use crate::tests::utils::{create_contract_message, get_evm, get_evm_config};
@@ -21,6 +22,8 @@ type C = DefaultContext;
 
 use super::call_tests::send_money_to_contract_message;
 use super::utils::create_contract_message_with_bytecode;
+
+const VERSIONED_HASH_VERSION_KZG: u8 = 1;
 
 fn claim_gift_from_transient_storage_contract_transaction(
     contract_addr: Address,
@@ -50,6 +53,23 @@ fn store_blob_base_fee_transaction(
         .sign_default_transaction(
             TxKind::Call(contract_addr),
             contract.store_blob_base_fee(),
+            nonce,
+            0,
+        )
+        .unwrap()
+}
+
+fn call_kzg_point_evaluation_transaction(
+    contract_addr: Address,
+    dev_signer: &TestSigner,
+    nonce: u64,
+    input: Bytes,
+) -> RlpEvmTransaction {
+    let contract = KZGPointEvaluationContract::default();
+    dev_signer
+        .sign_default_transaction(
+            TxKind::Call(contract_addr),
+            contract.call_kzg_point_evaluation(input),
             nonce,
             0,
         )
@@ -534,4 +554,106 @@ fn test_blob_base_fee_should_return_1() {
         .unwrap();
 
     assert_eq!(storage_value, U256::from(1));
+}
+
+#[test]
+fn test_kzg_point_eval_should_revert() {
+    let (config, dev_signer, contract_addr) =
+        get_evm_config(U256::from_str("100000000000000000000").unwrap(), None);
+
+    let (mut evm, mut working_set) = get_evm(&config);
+    let l1_fee_rate = 0;
+    let mut l2_height = 2;
+
+    let soft_confirmation_info = HookSoftConfirmationInfo {
+        l2_height,
+        da_slot_hash: [5u8; 32],
+        da_slot_height: 1,
+        da_slot_txs_commitment: [42u8; 32],
+        pre_state_root: [10u8; 32].to_vec(),
+        current_spec: SovSpecId::Fork1,
+        pub_key: vec![],
+        deposit_data: vec![],
+        l1_fee_rate,
+        timestamp: 0,
+    };
+
+    // Deploy transient storage contract
+    let sender_address = generate_address::<C>("sender");
+    evm.begin_soft_confirmation_hook(&soft_confirmation_info, &mut working_set);
+    {
+        let context = C::new(sender_address, l2_height, SovSpecId::Fork1, l1_fee_rate);
+
+        let deploy_message =
+            create_contract_message(&dev_signer, 0, KZGPointEvaluationContract::default());
+
+        evm.call(
+            CallMessage {
+                txs: vec![deploy_message],
+            },
+            &context,
+            &mut working_set,
+        )
+        .unwrap();
+    }
+    evm.end_soft_confirmation_hook(&soft_confirmation_info, &mut working_set);
+    evm.finalize_hook(&[99u8; 32].into(), &mut working_set.accessory_state());
+
+    l2_height += 1;
+
+    // Implementation taken from https://eips.ethereum.org/EIPS/eip-4844#point-evaluation-precompile
+    fn kzg_to_versioned_hash(commitment: Bytes) -> Bytes {
+        let mut commitment_hash = sha2::Sha256::digest(commitment).to_vec();
+        commitment_hash[0] = VERSIONED_HASH_VERSION_KZG;
+        Bytes::from(commitment_hash)
+    }
+
+    // data is taken from: https://github.com/ethereum/c-kzg-4844/tree/main/tests/verify_kzg_proof/kzg-mainnet/verify_kzg_proof_case_correct_proof_d0992bc0387790a4
+    let commitment= Bytes::from_str("8f59a8d2a1a625a17f3fea0fe5eb8c896db3764f3185481bc22f91b4aaffcca25f26936857bc3a7c2539ea8ec3a952b7").unwrap();
+    let versioned_hash = kzg_to_versioned_hash(commitment.clone());
+    let z = Bytes::from_str("5eb7004fe57383e6c88b99d839937fddf3f99279353aaf8d5c9a75f91ce33c62")
+        .unwrap();
+    let y = Bytes::from_str("4882cf0609af8c7cd4c256e63a35838c95a9ebbf6122540ab344b42fd66d32e1")
+        .unwrap();
+    let proof =  Bytes::from_str("0x987ea6df69bbe97c23e0dd948cf2d4490824ba7fea5af812721b2393354b0810a9dba2c231ea7ae30f26c412c7ea6e3a").unwrap();
+
+    // The data is encoded as follows: versioned_hash | z | y | commitment | proof | with z and y being padded 32 byte big endian values
+    // ref: https://eips.ethereum.org/EIPS/eip-4844#point-evaluation-precompile
+    let mut input = vec![];
+    input.extend_from_slice(&versioned_hash);
+    input.extend_from_slice(&z);
+    input.extend_from_slice(&y);
+    input.extend_from_slice(&commitment);
+    input.extend_from_slice(&proof);
+
+    evm.begin_soft_confirmation_hook(&soft_confirmation_info, &mut working_set);
+    {
+        let context = C::new(sender_address, l2_height, SovSpecId::Fork1, l1_fee_rate);
+
+        let deploy_message = call_kzg_point_evaluation_transaction(
+            contract_addr,
+            &dev_signer,
+            1,
+            Bytes::try_from(input).unwrap(),
+        );
+
+        evm.call(
+            CallMessage {
+                txs: vec![deploy_message],
+            },
+            &context,
+            &mut working_set,
+        )
+        .unwrap();
+    }
+    evm.end_soft_confirmation_hook(&soft_confirmation_info, &mut working_set);
+    evm.finalize_hook(&[99u8; 32].into(), &mut working_set.accessory_state());
+
+    // expect this call to fail because we do not have the kzg feature of revm enabled on fork1
+    let receipts: Vec<_> = evm
+        .receipts
+        .iter(&mut working_set.accessory_state())
+        .collect();
+
+    assert!(!receipts.last().unwrap().receipt.success);
 }
