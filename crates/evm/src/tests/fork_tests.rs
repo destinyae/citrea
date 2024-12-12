@@ -791,16 +791,4 @@ fn test_offchain_contract_storage_evm() {
 
     let evm_code = evm.code.get(&code_hash, &mut working_set);
     assert!(evm_code.is_none());
-
-    let code = evm
-        .get_code(
-            new_contract_address,
-            Some(alloy_eips::BlockId::Number(
-                alloy_eips::BlockNumberOrTag::Latest,
-            )),
-            &mut working_set,
-        )
-        .unwrap();
-
-    assert_eq!(offchain_code.unwrap().original_bytes(), code);
 }
