@@ -213,6 +213,7 @@ pub struct FullNodeConfig<BitcoinServiceConfig> {
     /// Important pubkeys
     pub public_keys: RollupPublicKeys,
     /// Telemetry configuration
+    #[serde(default)]
     pub telemetry: TelemetryConfig,
 }
 
