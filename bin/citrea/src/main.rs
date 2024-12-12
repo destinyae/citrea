@@ -19,7 +19,7 @@ use sov_mock_da::MockDaConfig;
 use sov_modules_api::Spec;
 use sov_modules_rollup_blueprint::{Network, RollupBlueprint};
 use sov_state::storage::NativeStorage;
-use tracing::{error, info, instrument};
+use tracing::{debug, error, info, instrument};
 
 #[cfg(test)]
 mod test_rpc;
@@ -212,13 +212,15 @@ where
     )
     .parse()
     .map_err(|_| anyhow!("Invalid telemetry address"))?;
-    let builder = PrometheusBuilder::new();
+
+    debug!("Starting telemetry server on: {}", telemetry_addr);
+
+    let builder = PrometheusBuilder::new().with_http_listener(telemetry_addr);
     builder
         .idle_timeout(
             MetricKindMask::GAUGE | MetricKindMask::HISTOGRAM,
             Some(Duration::from_secs(30)),
         )
-        .with_http_listener(telemetry_addr)
         .install()
         .map_err(|_| anyhow!("failed to install Prometheus recorder"))?;
 
