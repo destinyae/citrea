@@ -635,7 +635,7 @@ fn test_kzg_point_eval_should_revert() {
             contract_addr,
             &dev_signer,
             1,
-            Bytes::try_from(input).unwrap(),
+            Bytes::from(input),
         );
 
         evm.call(
