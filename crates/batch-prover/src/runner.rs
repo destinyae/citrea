@@ -34,7 +34,7 @@ use tokio::time::sleep;
 use tracing::{debug, error, info, instrument};
 
 use crate::da_block_handler::L1BlockHandler;
-use crate::metrics::PROVER_METRICS;
+use crate::metrics::BATCH_PROVER_METRICS;
 use crate::rpc::{create_rpc_module, RpcContext};
 
 type StateRoot<ST, Da> = <ST as StateTransitionFunction<Da>>::StateRoot;
@@ -477,8 +477,8 @@ where
             l2_height, self.state_root
         );
 
-        PROVER_METRICS.current_l2_block.set(l2_height as f64);
-        PROVER_METRICS.process_soft_confirmation.record(
+        BATCH_PROVER_METRICS.current_l2_block.set(l2_height as f64);
+        BATCH_PROVER_METRICS.process_soft_confirmation.record(
             Instant::now()
                 .saturating_duration_since(start)
                 .as_secs_f64(),

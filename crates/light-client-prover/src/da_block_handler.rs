@@ -25,7 +25,7 @@ use tokio::time::{sleep, Duration};
 use tokio_util::sync::CancellationToken;
 use tracing::{error, info};
 
-use crate::metrics::PROVER_METRICS;
+use crate::metrics::LIGHT_CLIENT_METRICS;
 
 pub(crate) struct L1BlockHandler<Vm, Da, Ps, DB>
 where
@@ -293,7 +293,7 @@ where
             .set_last_scanned_l1_height(SlotNumber(l1_block.header().height()))
             .expect("Saving last scanned l1 height to ledger db");
 
-        PROVER_METRICS.current_l1_block.set(l1_height as f64);
+        LIGHT_CLIENT_METRICS.current_l1_block.set(l1_height as f64);
 
         Ok(())
     }

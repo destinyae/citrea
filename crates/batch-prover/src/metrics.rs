@@ -4,7 +4,7 @@ use once_cell::sync::Lazy;
 
 #[derive(Metrics)]
 #[metrics(scope = "batch_prover")]
-pub struct ProverMetrics {
+pub struct BatchProverMetrics {
     #[metric(describe = "The current L1 block number which is used to produce L2 blocks")]
     pub current_l1_block: Gauge,
     #[metric(describe = "The current L2 block number")]
@@ -14,7 +14,7 @@ pub struct ProverMetrics {
 }
 
 /// Batch prover metrics
-pub static PROVER_METRICS: Lazy<ProverMetrics> = Lazy::new(|| {
-    ProverMetrics::describe();
-    ProverMetrics::default()
+pub static BATCH_PROVER_METRICS: Lazy<BatchProverMetrics> = Lazy::new(|| {
+    BatchProverMetrics::describe();
+    BatchProverMetrics::default()
 });
