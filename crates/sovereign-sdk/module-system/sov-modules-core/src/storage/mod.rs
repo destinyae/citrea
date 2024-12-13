@@ -311,7 +311,7 @@ pub trait NativeStorage: Storage {
     fn version(&self) -> u64;
     /// Returns the value corresponding to the key or None if key is absent and a proof to
     /// get the value.
-    fn get_with_proof(&self, key: StorageKey) -> StorageProof;
+    fn get_with_proof(&self, key: StorageKey, version: Version) -> StorageProof;
 
     /// Get the root hash of the tree at the requested version
     fn get_root_hash(&self, version: Version) -> Result<StorageRootHash, anyhow::Error>;

@@ -277,10 +277,10 @@ where
     fn version(&self) -> u64 {
         self.db.get_next_version().saturating_sub(1)
     }
-    fn get_with_proof(&self, key: StorageKey) -> StorageProof {
+    fn get_with_proof(&self, key: StorageKey, version: Version) -> StorageProof {
         let merkle = JellyfishMerkleTree::<StateDB<Q>, DefaultHasher>::new(&self.db);
         let (val_opt, proof) = merkle
-            .get_with_proof(KeyHash::with::<DefaultHasher>(key.as_ref()), self.version())
+            .get_with_proof(KeyHash::with::<DefaultHasher>(key.as_ref()), version)
             .unwrap();
         StorageProof {
             key,

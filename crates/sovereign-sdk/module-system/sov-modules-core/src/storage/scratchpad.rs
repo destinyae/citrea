@@ -521,21 +521,20 @@ impl<S: Storage> WorkingSet<S> {
     }
 
     /// Fetches given value and provides a proof of it presence/absence.
-    pub fn get_with_proof(&mut self, key: StorageKey) -> StorageProof
+    pub fn get_with_proof(&mut self, key: StorageKey, version: Version) -> StorageProof
     where
         S: NativeStorage,
     {
         // First inner is `RevertableWriter` and second inner is actually a `Storage` instance
-        self.delta.inner.inner.get_with_proof(key)
+        self.delta.inner.inner.get_with_proof(key, version)
     }
 
     /// Get the root hash of the tree.
-    pub fn get_root_hash(&mut self) -> Result<StorageRootHash, anyhow::Error>
+    pub fn get_root_hash(&mut self, version: Version) -> Result<StorageRootHash, anyhow::Error>
     where
         S: NativeStorage,
     {
         // First inner is `RevertableWriter` and second inner is actually a `Storage` instance
-        let version = self.delta.inner.inner.version();
         self.delta.inner.inner.get_root_hash(version)
     }
 }

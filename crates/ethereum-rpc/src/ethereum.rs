@@ -120,10 +120,15 @@ where
 
         let evm = Evm::<C>::default();
         evm.set_state_to_end_of_evm_block_by_block_id(block_id, working_set)?;
+        let block_id = evm.block_number(working_set)?;
+        let version: u64 = block_id
+            .try_into()
+            .map_err(|_| EthApiError::EvmCustom("Block id overflow".into()))?;
+        let version = version + 1; // We need to set block_id to the end
 
         let root_hash = working_set
-            .get_root_hash()
-            .map_err(|_| EthApiError::UnknownBlockNumber)?;
+            .get_root_hash(version)
+            .map_err(|_| EthApiError::EvmCustom("Root hash not found".into()))?;
 
         let account = evm.accounts.get(&address, working_set).unwrap_or_default();
         let balance = account.balance;
@@ -135,7 +140,7 @@ where
             &address,
             evm.accounts.codec().key_codec(),
         );
-        let account_proof = working_set.get_with_proof(account_key);
+        let account_proof = working_set.get_with_proof(account_key, version);
         let account_proof = borsh::to_vec(&account_proof).expect("Serialization shouldn't fail");
         let account_proof = Bytes::from(account_proof);
 
@@ -148,7 +153,7 @@ where
                 db_account.storage.codec().key_codec(),
             );
             let value = db_account.storage.get(&key, working_set);
-            let proof = working_set.get_with_proof(storage_key);
+            let proof = working_set.get_with_proof(storage_key, version);
             let value_proof = borsh::to_vec(&proof.proof).expect("Serialization shouldn't fail");
             let value_proof = Bytes::from(value_proof);
             storage_proof.push(EIP1186StorageProof {
