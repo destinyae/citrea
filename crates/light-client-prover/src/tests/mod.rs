@@ -1,6 +1,6 @@
 mod test_utils;
 
-use sov_mock_da::{MockBlockHeader, MockDaSpec, MockDaVerifier};
+use sov_mock_da::{MockBlockHeader, MockDaVerifier};
 use sov_mock_zkvm::MockZkGuest;
 use sov_rollup_interface::zk::LightClientCircuitInput;
 use test_utils::{create_mock_blob, create_prev_lcp_serialized};
@@ -18,7 +18,7 @@ fn test_light_client_circuit_valid_da_valid_data() {
 
     let block_header_1 = MockBlockHeader::from_height(1);
 
-    let input = LightClientCircuitInput::<MockDaSpec> {
+    let input = LightClientCircuitInput {
         previous_light_client_proof_journal: None,
         light_client_proof_method_id,
         da_block_header: block_header_1,
@@ -45,7 +45,7 @@ fn test_light_client_circuit_valid_da_valid_data() {
 
     let mock_output_1_serialized = create_prev_lcp_serialized(output_1, true);
 
-    let input_2 = LightClientCircuitInput::<MockDaSpec> {
+    let input_2 = LightClientCircuitInput {
         previous_light_client_proof_journal: Some(mock_output_1_serialized),
         da_block_header: block_header_2,
         da_data: vec![blob_3, blob_4],
@@ -75,7 +75,7 @@ fn test_wrong_order_da_blocks_should_still_work() {
 
     let block_header_1 = MockBlockHeader::from_height(1);
 
-    let input = LightClientCircuitInput::<MockDaSpec> {
+    let input = LightClientCircuitInput {
         previous_light_client_proof_journal: None,
         light_client_proof_method_id,
         da_block_header: block_header_1,
@@ -105,7 +105,7 @@ fn create_unchainable_outputs_then_chain_them_on_next_block() {
     let blob_1 = create_mock_blob([2u8; 32], [3u8; 32], 3, true);
     let blob_2 = create_mock_blob([3u8; 32], [4u8; 32], 4, true);
 
-    let input = LightClientCircuitInput::<MockDaSpec> {
+    let input = LightClientCircuitInput {
         previous_light_client_proof_journal: None,
         light_client_proof_method_id,
         da_block_header: block_header_1,
@@ -143,7 +143,7 @@ fn create_unchainable_outputs_then_chain_them_on_next_block() {
 
     let mock_output_1_ser = create_prev_lcp_serialized(output_1, true);
 
-    let input_2 = LightClientCircuitInput::<MockDaSpec> {
+    let input_2 = LightClientCircuitInput {
         previous_light_client_proof_journal: Some(mock_output_1_ser),
         light_client_proof_method_id,
         da_block_header: block_header_2,
@@ -174,7 +174,7 @@ fn test_header_chain_proof_height_and_hash() {
 
     let block_header_1 = MockBlockHeader::from_height(1);
 
-    let input = LightClientCircuitInput::<MockDaSpec> {
+    let input = LightClientCircuitInput {
         previous_light_client_proof_journal: None,
         light_client_proof_method_id,
         da_block_header: block_header_1,
@@ -201,7 +201,7 @@ fn test_header_chain_proof_height_and_hash() {
 
     let prev_lcp_out = create_prev_lcp_serialized(output_1, true);
 
-    let input_2 = LightClientCircuitInput::<MockDaSpec> {
+    let input_2 = LightClientCircuitInput {
         previous_light_client_proof_journal: Some(prev_lcp_out),
         da_block_header: block_header_2,
         da_data: vec![blob_3, blob_4],
@@ -232,7 +232,7 @@ fn test_unverifiable_batch_proofs() {
 
     let block_header_1 = MockBlockHeader::from_height(1);
 
-    let input = LightClientCircuitInput::<MockDaSpec> {
+    let input = LightClientCircuitInput {
         previous_light_client_proof_journal: None,
         light_client_proof_method_id,
         da_block_header: block_header_1,
@@ -265,7 +265,7 @@ fn test_unverifiable_prev_light_client_proof() {
 
     let block_header_1 = MockBlockHeader::from_height(1);
 
-    let input = LightClientCircuitInput::<MockDaSpec> {
+    let input = LightClientCircuitInput {
         previous_light_client_proof_journal: None,
         light_client_proof_method_id,
         da_block_header: block_header_1,
@@ -290,7 +290,7 @@ fn test_unverifiable_prev_light_client_proof() {
 
     let prev_lcp_out = create_prev_lcp_serialized(output_1, false);
 
-    let input_2 = LightClientCircuitInput::<MockDaSpec> {
+    let input_2 = LightClientCircuitInput {
         previous_light_client_proof_journal: Some(prev_lcp_out),
         da_block_header: block_header_2,
         da_data: vec![],
