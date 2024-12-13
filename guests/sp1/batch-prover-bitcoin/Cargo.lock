@@ -550,8 +550,10 @@ dependencies = [
  "bitcoin",
  "borsh",
  "citrea-primitives",
+ "crypto-bigint",
  "futures",
  "hex",
+ "itertools 0.13.0",
  "rand",
  "serde",
  "serde_json",
@@ -702,9 +704,9 @@ dependencies = [
 
 [[package]]
 name = "brotli"
-version = "6.0.0"
+version = "7.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "74f7971dbd9326d58187408ab83117d8ac1bb9c17b085fdacd1cf2f598719b6b"
+checksum = "cc97b8f16f944bba54f0433f07e30be199b6dc2bd25937444bbad560bcea29bd"
 dependencies = [
  "alloc-no-stdlib",
  "alloc-stdlib",
@@ -806,7 +808,6 @@ dependencies = [
  "alloy-eips",
  "alloy-primitives 0.7.7",
  "alloy-sol-types",
- "anyhow",
  "borsh",
  "citrea-primitives",
  "hex",
@@ -2640,7 +2641,6 @@ dependencies = [
 name = "soft-confirmation-rule-enforcer"
 version = "0.5.0-rc.1"
 dependencies = [
- "anyhow",
  "borsh",
  "serde",
  "sov-modules-api",
@@ -2652,7 +2652,6 @@ dependencies = [
 name = "sov-accounts"
 version = "0.5.0-rc.1"
 dependencies = [
- "anyhow",
  "borsh",
  "serde",
  "sov-modules-api",
@@ -2668,6 +2667,7 @@ dependencies = [
  "bech32 0.9.1",
  "borsh",
  "derive_more 0.99.18",
+ "digest 0.10.7",
  "ed25519-dalek",
  "hex",
  "jmt",
@@ -2716,6 +2716,7 @@ version = "0.5.0-rc.1"
 dependencies = [
  "anyhow",
  "borsh",
+ "citrea-primitives",
  "hex",
  "itertools 0.13.0",
  "jmt",
@@ -2736,9 +2737,7 @@ dependencies = [
  "bytes",
  "digest 0.10.7",
  "hex",
- "proptest",
  "serde",
- "sha2",
  "thiserror",
 ]
 
@@ -2812,7 +2811,7 @@ dependencies = [
 [[package]]
 name = "sp1-lib"
 version = "3.0.0"
-source = "git+https://github.com/succinctlabs/sp1.git?branch=dev#d13675665bff079b6da4f115cb322eadca6bb50e"
+source = "git+https://github.com/succinctlabs/sp1.git?branch=dev#aa5d95360403878c947d1e72b84d7f24cc5ce228"
 dependencies = [
  "bincode",
  "serde",

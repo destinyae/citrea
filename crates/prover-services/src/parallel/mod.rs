@@ -7,7 +7,7 @@ use sov_db::ledger_db::LedgerDB;
 use sov_rollup_interface::da::DaData;
 use sov_rollup_interface::services::da::DaService;
 use sov_rollup_interface::stf::StateTransitionFunction;
-use sov_rollup_interface::zk::{Proof, ZkvmHost};
+use sov_rollup_interface::zk::{Proof, ZkvmGuest, ZkvmHost};
 use sov_stf_runner::ProverService;
 use tokio::sync::{oneshot, Mutex};
 use tracing::{info, warn};
@@ -28,7 +28,7 @@ where
 {
     thread_pool: rayon::ThreadPool,
 
-    proof_mode: Arc<Mutex<ProofGenMode<Da, Vm, Stf>>>,
+    proof_mode: Arc<Mutex<ProofGenMode<Da, Stf>>>,
 
     da_service: Arc<Da>,
     vm: Vm,
@@ -49,7 +49,7 @@ where
     pub fn new(
         da_service: Arc<Da>,
         vm: Vm,
-        proof_mode: ProofGenMode<Da, Vm, Stf>,
+        proof_mode: ProofGenMode<Da, Stf>,
         zk_storage: Stf::PreState,
         thread_pool_size: usize,
         _ledger_db: LedgerDB,
@@ -95,7 +95,7 @@ where
     pub fn new_from_env(
         da_service: Arc<Da>,
         vm: Vm,
-        proof_mode: ProofGenMode<Da, Vm, Stf>,
+        proof_mode: ProofGenMode<Da, Stf>,
         zk_storage: Stf::PreState,
         _ledger_db: LedgerDB,
     ) -> anyhow::Result<Self> {
@@ -247,7 +247,7 @@ fn make_proof<Da, Vm, Stf>(
     mut vm: Vm,
     elf: Vec<u8>,
     zk_storage: Stf::PreState,
-    proof_mode: Arc<Mutex<ProofGenMode<Da, Vm, Stf>>>,
+    proof_mode: Arc<Mutex<ProofGenMode<Da, Stf>>>,
 ) -> Result<Proof, anyhow::Error>
 where
     Da: DaService,
@@ -258,10 +258,16 @@ where
     let mut proof_mode = proof_mode.blocking_lock();
     match proof_mode.deref_mut() {
         ProofGenMode::Skip => Ok(Vec::default()),
-        ProofGenMode::Simulate(ref mut verifier) => verifier
-            .run_sequencer_commitments_in_da_slot(vm.simulate_with_hints(), zk_storage)
-            .map(|_| Vec::default())
-            .map_err(|e| anyhow::anyhow!("Guest execution must succeed but failed with {:?}", e)),
+        ProofGenMode::Simulate(ref mut verifier) => {
+            let guest = vm.simulate_with_hints();
+            let data = guest.read_from_host();
+            verifier
+                .run_sequencer_commitments_in_da_slot(data, zk_storage)
+                .map(|_| Vec::default())
+                .map_err(|e| {
+                    anyhow::anyhow!("Guest execution must succeed but failed with {:?}", e)
+                })
+        }
         // If not skip or simulate, we have to drop the lock manually to allow parallel proving
         ProofGenMode::Execute => {
             drop(proof_mode);

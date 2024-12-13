@@ -10,15 +10,15 @@ use citrea_stf::StfVerifier;
 use sov_modules_api::default_context::ZkDefaultContext;
 use sov_modules_stf_blueprint::StfBlueprint;
 use sov_rollup_interface::da::DaVerifier;
+use sov_rollup_interface::zk::ZkvmGuest;
 use sov_state::ZkStorage;
 
 pub fn main() {
     let guest = SP1Guest::new();
     let storage = ZkStorage::new();
+    let stf = StfBlueprint::new();
 
-    let stf: StfBlueprint<ZkDefaultContext, _, _, Runtime<_, _>> = StfBlueprint::new();
-
-    let mut stf_verifier = StfVerifier::new(
+    let mut stf_verifier: StfVerifier<_, ZkDefaultContext, Runtime<_, _>> = StfVerifier::new(
         stf,
         BitcoinVerifier::new(RollupParams {
             to_batch_proof_prefix: TO_BATCH_PROOF_PREFIX.to_vec(),
@@ -26,7 +26,11 @@ pub fn main() {
         }),
     );
 
-    stf_verifier
-        .run_sequencer_commitments_in_da_slot(guest, storage)
+    let data = guest.read_from_host();
+
+    let out = stf_verifier
+        .run_sequencer_commitments_in_da_slot(data, storage)
         .expect("Prover must be honest");
+
+    guest.commit(&out);
 }

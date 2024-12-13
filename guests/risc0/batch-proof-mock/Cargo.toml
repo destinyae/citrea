@@ -17,6 +17,7 @@ citrea-stf = { path = "../../../crates/citrea-stf" }
 sov-mock-da = { path = "../../../crates/sovereign-sdk/adapters/mock-da", default-features = false }
 sov-modules-api = { path = "../../../crates/sovereign-sdk/module-system/sov-modules-api", default-features = false }
 sov-modules-stf-blueprint = { path = "../../../crates/sovereign-sdk/module-system/sov-modules-stf-blueprint" }
+sov-rollup-interface = { path = "../../../crates/sovereign-sdk/rollup-interface" }
 sov-state = { path = "../../../crates/sovereign-sdk/module-system/sov-state" }
 
 [features]

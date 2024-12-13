@@ -562,6 +562,7 @@ dependencies = [
  "sov-mock-da",
  "sov-modules-api",
  "sov-modules-stf-blueprint",
+ "sov-rollup-interface",
  "sov-state",
 ]
 
