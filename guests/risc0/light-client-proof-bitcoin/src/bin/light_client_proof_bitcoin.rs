@@ -17,7 +17,9 @@ pub fn main() {
         to_light_client_prefix: TO_LIGHT_CLIENT_PREFIX.to_vec(),
     });
 
-    let output = run_circuit::<BitcoinVerifier, Risc0Guest>(da_verifier, &guest).unwrap();
+    let input = guest.read_from_host();
+
+    let output = run_circuit::<BitcoinVerifier, Risc0Guest>(da_verifier, input).unwrap();
 
     guest.commit(&output);
 }

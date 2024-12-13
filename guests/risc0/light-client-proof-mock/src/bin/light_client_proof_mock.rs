@@ -11,7 +11,9 @@ pub fn main() {
 
     let da_verifier = MockDaVerifier {};
 
-    let output = run_circuit::<MockDaVerifier, Risc0Guest>(da_verifier, &guest).unwrap();
+    let input = guest.read_from_host();
+
+    let output = run_circuit::<MockDaVerifier, Risc0Guest>(da_verifier, input).unwrap();
 
     guest.commit(&output);
 }

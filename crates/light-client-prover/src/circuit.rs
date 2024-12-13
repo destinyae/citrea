@@ -17,10 +17,8 @@ pub enum LightClientVerificationError {
 
 pub fn run_circuit<DaV: DaVerifier, G: ZkvmGuest>(
     da_verifier: DaV,
-    guest: &G,
+    input: LightClientCircuitInput<DaV::Spec>,
 ) -> Result<LightClientCircuitOutput<DaV::Spec>, LightClientVerificationError> {
-    let input: LightClientCircuitInput<DaV::Spec> = guest.read_from_host();
-
     // Extract previous light client proof output
     let previous_light_client_proof_output =
         if let Some(journal) = input.previous_light_client_proof_journal {
