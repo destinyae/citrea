@@ -1763,7 +1763,6 @@ dependencies = [
  "metrics",
  "metrics-exporter-prometheus",
  "metrics-util",
- "proptest",
  "prover-services",
  "regex",
  "reqwest",
@@ -1776,7 +1775,6 @@ dependencies = [
  "rs_merkle",
  "rustc_version_runtime",
  "secp256k1",
- "sequencer-client",
  "serde",
  "serde_json",
  "sha2",
@@ -1821,11 +1819,12 @@ dependencies = [
  "prover-services",
  "rand 0.8.5",
  "rayon",
+ "reth-primitives",
  "rs_merkle",
- "sequencer-client",
  "serde",
  "sha2",
  "sov-db",
+ "sov-ledger-rpc",
  "sov-mock-da",
  "sov-mock-zkvm",
  "sov-modules-api",
@@ -1958,12 +1957,13 @@ dependencies = [
  "metrics-derive",
  "once_cell",
  "rand 0.8.5",
+ "reth-primitives",
  "rs_merkle",
- "sequencer-client",
  "serde",
  "serde_json",
  "sha2",
  "sov-db",
+ "sov-ledger-rpc",
  "sov-mock-da",
  "sov-modules-api",
  "sov-modules-stf-blueprint",
@@ -1993,8 +1993,9 @@ dependencies = [
  "metrics",
  "metrics-derive",
  "once_cell",
- "sequencer-client",
+ "reth-primitives",
  "sov-db",
+ "sov-ledger-rpc",
  "sov-mock-da",
  "sov-mock-zkvm",
  "sov-modules-api",
@@ -2896,20 +2897,20 @@ dependencies = [
  "borsh",
  "citrea-evm",
  "citrea-primitives",
+ "citrea-sequencer",
  "futures",
  "jsonrpsee",
  "parking_lot",
- "proptest",
  "reth-primitives",
  "reth-rpc-eth-types",
  "reth-rpc-types",
  "reth-rpc-types-compat",
  "rustc_version_runtime",
  "schnellru",
- "sequencer-client",
  "serde",
  "serde_json",
  "sov-db",
+ "sov-ledger-rpc",
  "sov-modules-api",
  "sov-rollup-interface",
  "tokio",
@@ -5216,17 +5217,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "proptest-derive"
-version = "0.4.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9cf16337405ca084e9c78985114633b6827711d22b9e6ef6c6c0d665eb3f0b6e"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 1.0.109",
-]
-
-[[package]]
 name = "prost"
 version = "0.12.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -7285,24 +7275,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f638d531eccd6e23b980caf34876660d38e265409d8e99b397ab71eb3612fad0"
 
 [[package]]
-name = "sequencer-client"
-version = "0.5.0-rc.1"
-dependencies = [
- "anyhow",
- "borsh",
- "citrea-primitives",
- "hex",
- "jsonrpsee",
- "reth-primitives",
- "reth-rpc-types",
- "serde",
- "serde_json",
- "sov-rollup-interface",
- "tokio",
- "tracing",
-]
-
-[[package]]
 name = "serde"
 version = "1.0.215"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -7596,12 +7568,9 @@ dependencies = [
 name = "sov-accounts"
 version = "0.5.0-rc.1"
 dependencies = [
- "arbitrary",
  "borsh",
  "clap",
  "jsonrpsee",
- "proptest",
- "proptest-derive",
  "schemars",
  "serde",
  "serde_json",
@@ -7617,7 +7586,6 @@ name = "sov-db"
 version = "0.5.0-rc.1"
 dependencies = [
  "anyhow",
- "arbitrary",
  "bincode",
  "borsh",
  "byteorder",
@@ -7625,8 +7593,6 @@ dependencies = [
  "hex",
  "jmt",
  "num_cpus",
- "proptest",
- "proptest-derive",
  "rand 0.8.5",
  "rlimit",
  "rocksdb",
@@ -7665,7 +7631,6 @@ dependencies = [
  "bytes",
  "futures",
  "hex",
- "lazy_static",
  "pin-project",
  "rusqlite",
  "serde",
@@ -7694,7 +7659,6 @@ name = "sov-modules-api"
 version = "0.5.0-rc.1"
 dependencies = [
  "anyhow",
- "arbitrary",
  "bech32 0.9.1",
  "bincode",
  "borsh",
@@ -7705,8 +7669,6 @@ dependencies = [
  "hex",
  "jmt",
  "jsonrpsee",
- "proptest",
- "proptest-derive",
  "rand 0.8.5",
  "schemars",
  "serde",
@@ -7729,7 +7691,6 @@ name = "sov-modules-core"
 version = "0.5.0-rc.1"
 dependencies = [
  "anyhow",
- "arbitrary",
  "bech32 0.9.1",
  "borsh",
  "derive_more",
@@ -7737,7 +7698,6 @@ dependencies = [
  "hex",
  "jmt",
  "proptest",
- "proptest-derive",
  "schemars",
  "serde",
  "serde_json",
@@ -7831,18 +7791,14 @@ name = "sov-rollup-interface"
 version = "0.5.0-rc.1"
 dependencies = [
  "anyhow",
- "arbitrary",
  "async-trait",
  "borsh",
  "bytes",
  "digest 0.10.7",
  "futures",
  "hex",
- "proptest",
- "proptest-derive",
  "serde",
  "serde_json",
- "sha2",
  "thiserror",
  "tokio",
  "tracing",
@@ -7857,8 +7813,6 @@ dependencies = [
  "metrics",
  "metrics-derive",
  "once_cell",
- "proptest",
- "proptest-derive",
  "rocksdb",
  "sov-schema-db",
  "tempfile",
@@ -7872,12 +7826,10 @@ name = "sov-state"
 version = "0.5.0-rc.1"
 dependencies = [
  "anyhow",
- "arbitrary",
  "bcs",
  "borsh",
  "jmt",
  "proptest",
- "proptest-derive",
  "serde",
  "sha2",
  "sov-db",
@@ -7911,27 +7863,6 @@ dependencies = [
  "tokio",
  "tower",
  "tracing",
-]
-
-[[package]]
-name = "sov-zk-cycle-macros"
-version = "0.5.0-rc.1"
-dependencies = [
- "proc-macro2",
- "quote",
- "risc0-zkvm",
- "risc0-zkvm-platform",
- "sov-zk-cycle-macros",
- "syn 2.0.87",
- "trybuild",
-]
-
-[[package]]
-name = "sov-zk-cycle-utils"
-version = "0.5.0-rc.1"
-dependencies = [
- "risc0-zkvm",
- "risc0-zkvm-platform",
 ]
 
 [[package]]

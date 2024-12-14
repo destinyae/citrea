@@ -19,8 +19,6 @@ byteorder = { workspace = true, default-features = true, optional = true }
 metrics = { workspace = true }
 metrics-derive = { workspace = true }
 once_cell = { workspace = true, default-features = true }
-proptest = { workspace = true, optional = true, default-features = true }
-proptest-derive = { workspace = true, optional = true }
 rocksdb = { workspace = true }
 thiserror = { workspace = true }
 tokio = { workspace = true }
@@ -34,4 +32,3 @@ tempfile = { workspace = true }
 [features]
 default = []
 test-utils = ["dep:byteorder"]
-arbitrary = ["dep:proptest", "dep:proptest-derive"]

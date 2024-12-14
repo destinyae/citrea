@@ -16,7 +16,6 @@ members = [
   "crates/pruning",
   "crates/risc0",
   "crates/sequencer",
-  "crates/sequencer-client",
   "crates/soft-confirmation-rule-enforcer",
   # "crates/sp1",
   # Sovereign sdk
@@ -28,9 +27,6 @@ members = [
   "crates/sovereign-sdk/full-node/sov-ledger-rpc",
   "crates/sovereign-sdk/full-node/sov-stf-runner",
   "crates/sovereign-sdk/full-node/sov-prover-storage-manager",
-  # Utils
-  "crates/sovereign-sdk/utils/zk-cycle-macros",
-  "crates/sovereign-sdk/utils/zk-cycle-utils",
   # Module System
   "crates/sovereign-sdk/module-system/sov-modules-stf-blueprint",
   "crates/sovereign-sdk/module-system/sov-modules-rollup-blueprint",
@@ -55,7 +51,6 @@ repository = "https://github.com/chainwayxyz/citrea"
 # External dependencies
 async-trait = "0.1.71"
 anyhow = { version = "1.0.68", default-features = false }
-arbitrary = { version = "1.3.1", features = ["derive"] }
 backoff = { version = "0.4.0", features = ["futures", "tokio"] }
 borsh = { version = "1.5", default-features = false, features = ["derive"] }
 # TODO: Consider replacing this serialization format

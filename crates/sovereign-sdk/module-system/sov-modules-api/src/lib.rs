@@ -195,16 +195,12 @@ pub use sov_rollup_interface::services::da::SlotData;
 pub use sov_rollup_interface::soft_confirmation::{
     SignedSoftConfirmation, UnsignedSoftConfirmation, UnsignedSoftConfirmationV1,
 };
-pub use sov_rollup_interface::stf::{Event, StateDiff};
+pub use sov_rollup_interface::stf::StateDiff;
 pub use sov_rollup_interface::zk::{BatchProofCircuitOutput, Zkvm};
 pub use sov_rollup_interface::{digest, BasicAddress, RollupAddress};
 
 pub mod prelude {
     pub use super::{StateMapAccessor, StateValueAccessor, StateVecAccessor};
-}
-
-pub mod optimistic {
-    pub use sov_rollup_interface::optimistic::{Attestation, ProofOfBond};
 }
 
 pub mod da {
