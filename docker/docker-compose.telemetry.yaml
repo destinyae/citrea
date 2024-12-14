@@ -11,7 +11,7 @@ services:
       - "host.docker.internal:host-gateway"
 
   grafana:
-    image: grafana/grafana
+    image: grafana/grafana-enterprise
     ports:
       - 3000:3000
     environment:
@@ -34,3 +34,4 @@ services:
 
 networks:
   monitoring:
+    driver: bridge
