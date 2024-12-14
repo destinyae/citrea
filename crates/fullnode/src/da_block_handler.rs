@@ -137,6 +137,7 @@ where
             .front()
             .expect("Just checked pending L1 blocks is not empty");
         let l1_height = l1_block.header().height();
+        info!("Processing L1 block at height: {}", l1_height);
 
         // Set the l1 height of the l1 hash
         self.ledger_db
@@ -167,6 +168,7 @@ where
                 sequencer_commitments[0].l2_start_block_number,
                 sequencer_commitments[sequencer_commitments.len() - 1].l2_end_block_number,
             ) {
+                warn!("L1 commitment received, but L2 range is not synced yet...");
                 return;
             }
         }
@@ -465,16 +467,15 @@ async fn sync_l1<Da>(
 
             if block_number > l1_height {
                 l1_height = block_number;
-                if let Err(e) = sender.send(l1_block).await {
-                    error!("Could not notify about L1 block: {}", e);
-                    continue 'block_sync;
-                }
-            } else {
                 FULLNODE_METRICS.scan_l1_block.record(
                     Instant::now()
                         .saturating_duration_since(start)
                         .as_secs_f64(),
                 );
+                if let Err(e) = sender.send(l1_block).await {
+                    error!("Could not notify about L1 block: {}", e);
+                    continue 'block_sync;
+                }
             }
         }
 
