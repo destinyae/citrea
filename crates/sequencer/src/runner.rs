@@ -619,6 +619,7 @@ where
                         .saturating_duration_since(start)
                         .as_secs_f64(),
                 );
+                SEQUENCER_METRICS.current_l2_block.set(l2_height as f64);
 
                 Ok((
                     l2_height,

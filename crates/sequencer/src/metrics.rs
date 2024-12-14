@@ -15,6 +15,8 @@ pub struct SequencerMetrics {
     pub send_commitment_execution: Histogram,
     #[metric(describe = "The number of blocks included in a sequencer commitment")]
     pub commitment_blocks_count: Gauge,
+    #[metric(describe = "The current L2 block number")]
+    pub current_l2_block: Gauge,
     #[metric(describe = "The current L1 block number which is used to produce L2 blocks")]
     pub current_l1_block: Gauge,
 }
