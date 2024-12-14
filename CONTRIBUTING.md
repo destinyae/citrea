@@ -4,7 +4,7 @@ Thank you for your interest in contributing to Citrea! We accept and appreciate 
 
 ## On questions
 
-If you have some questions regarding the project or the repository, or if there are parts in the code that you could not understand, please visit our [Discord](https://discord.citrea.xyz). You can ask your technical questions regarding the project/repository in the #developer-chat there.
+If you have some questions regarding the project or the repository, or if there are parts in the code that you cannot understand, please visit our [Discord](https://discord.citrea.xyz). You can ask your technical questions regarding the project/repository in the #developer-chat there.
 
 Using issues for questions creates lots of noise on the codebase, so we kindly ask you to follow this convention.
 
@@ -12,9 +12,9 @@ Using issues for questions creates lots of noise on the codebase, so we kindly a
 
 If you see any problems regarding to code, or if you have any feature requests to be completed in the future, you may open an issue. However, before doing so, please search through the issues and pull requests to see if it's been done before to not to cause a duplicate issue.
 
-We have two different issue templates, one for the bugs and one for the feature requests. Please open issues using these templates. If you believe that your issue does not cover all of the fields in these templates, you can skip or leave some fields short. However, in general, you should write all necessary details for others to understand or develop on top of that.
+We have two different issue templates, one for the bugs and one for the feature requests. Please open issues using these templates. If you believe that your issue does not cover all of the fields in these templates, you can skip or leave some fields short. However, in general, you should write all the necessary details for others to understand or develop on top of that.
 
-Along with that, we expect the issue owner to be active in discussions when necessary (i.e. when steps could not be reprocuded or request is not clear), so please be aware of that.
+Along with that, we expect the issue owner to be active in discussions when necessary (i.e. when steps cannot be reproduced or the request is not clear), so please be aware of that.
 
 #### On typo fixes
 
@@ -28,7 +28,7 @@ Let's say you decided to contribute through the code. Great! Now, firstly, befor
 - Completed
 - Abandoned (closed)
 
-After that, you may either request a task for yourself from the issues, or open an issue and state that you want to work on it. We, as maintainers, will gladly assign that particular section to you.
+After that, you may either request a task for yourself from the issues or open an issue and state that you want to work on it. We, as maintainers, will gladly assign that particular section to you.
 
 #### Continous Integration
 
@@ -41,11 +41,11 @@ We have an integrated CI workflow in our repository, with Rust version set to st
 | No-std  | `make check-no-std`             |
 | Foundry | `forge test -vvv`               |
 
-We kindly expect you to run these and check everything is correct on your side before opening a ready Pull Request. We do not merge things until these pass, as expected :) If you want to check more about this workflow, feel free the to check it from [here](https://github.com/chainwayxyz/citrea/blob/nightly/.github/workflows/checks.yml).
+We kindly expect you to run these and check everything is correct on your side before opening a ready Pull Request. We do not merge things until these pass, as expected :) If you want to check more about this workflow, feel free to check it from [here](https://github.com/chainwayxyz/citrea/blob/nightly/.github/workflows/checks.yml).
 
 #### Styling
 
-There's also a Git Hook for you to run, in terms of styling. You can see / run it from [here](https://github.com/chainwayxyz/citrea/blob/nightly/.githooks/pre-commit).
+There's also a Git Hook for you to run, in terms of styling. You can see/run it from [here](https://github.com/chainwayxyz/citrea/blob/nightly/.githooks/pre-commit).
 Alternatively, you can run `make set-git-hook` to configure it automatically via the [Makefile](https://github.com/chainwayxyz/citrea/blob/585c84a921ba0e896f449a203d199d5bac34050d/Makefile#L72).
 
 ### Code of Conduct
