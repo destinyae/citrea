@@ -1261,6 +1261,7 @@ dependencies = [
  "hex",
  "itertools 0.13.0",
  "jsonrpsee",
+ "metrics",
  "pin-project",
  "rand 0.8.5",
  "reqwest",
