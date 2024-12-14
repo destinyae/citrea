@@ -11,15 +11,15 @@
 > \
 > Citrea uses **BTC** as its native token. **There's no Citrea token**. Please beware of scams! \
 > \
-> Please also note that **BTC** and **cBTC** of Citrea Testnet does not carry any real value.
+> Please also note that **BTC** and **cBTC** of Citrea Testnet do not carry any real value.
 
 ## What is Citrea?
 
 Citrea is the first rollup that enhances the capabilities of Bitcoin blockspace with zero-knowledge technology, **making it possible to build everything on Bitcoin**.
 
-Every transaction occuring on Citrea, is fully secured by zero-knowledge proofs and optimistically verified by Bitcoin via BitVM. The execution environment of Citrea is trustless with respect to Bitcoin and is accessible to all participants of the Bitcoin Network.
+Every transaction occurring on Citrea is fully secured by zero-knowledge proofs and optimistically verified by Bitcoin via BitVM. The execution environment of Citrea is trustless with respect to Bitcoin and is accessible to all participants of the Bitcoin Network.
 
-Citrea's vision is to build scalable infrastructure that advances Bitcoin into its next phase, foundation for world's finance. Citrea represents **Bitcoin Security at Scale** with its execution shard that keeps the settlement and data availability on-chain, on-Bitcoin.
+Citrea's vision is to build a scalable infrastructure that advances Bitcoin into its next phase, the foundation for world's finance. Citrea represents **Bitcoin Security at Scale** with its execution shard that keeps the settlement and data availability on-chain, on-Bitcoin.
 
 ## FAQ
 
@@ -40,5 +40,5 @@ Citrea's vision is to build scalable infrastructure that advances Bitcoin into i
 
 ## Acknowledgments
 
-- [Sovereign SDK](https://github.com/Sovereign-Labs/sovereign-sdk): Citrea is built on a forked version of the Sovereign SDK. We're deeply thankful to the development & support of Sovereign Labs through our journey.
+- [Sovereign SDK](https://github.com/Sovereign-Labs/sovereign-sdk): Citrea is built on a forked version of the Sovereign SDK. We're deeply thankful for the development & support of Sovereign Labs through our journey.
 - [Reth](https://github.com/paradigmxyz/reth): We use Reth crates in various components in Citrea. We're grateful for their rapid development & contribution to the Rust-Ethereum ecosystem.
